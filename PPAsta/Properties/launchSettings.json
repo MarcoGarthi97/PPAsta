@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PPAsta (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PPAsta (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
