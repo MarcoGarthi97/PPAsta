@@ -3,6 +3,7 @@ using CsvHelper;
 using Microsoft.Extensions.Logging;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.Google;
+using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -38,11 +39,8 @@ namespace PPAsta.Service.Services.Google
         {
             _logger.LogInformation(nameof(GetGoogleSpreadsheetAsync) + " start");
 
-            string sheetID = "1nSSKkhASvRuoBdfUj_ztC9AM572qVZZ9lVvm5KUELIo";
-            string url = $"https://docs.google.com/spreadsheets/d/{sheetID}/export?format=csv";
-
             using var client = new HttpClient();
-            var csvData = await client.GetStringAsync(url);
+            var csvData = await client.GetStringAsync(SrvAppConfigurationStorage.GoogleSpreadsheetConfiguration.Url);
 
             _logger.LogInformation(nameof(GetGoogleSpreadsheetAsync) + " end");
 
