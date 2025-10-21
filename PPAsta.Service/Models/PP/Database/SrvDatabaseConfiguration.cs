@@ -11,5 +11,5 @@ namespace PPAsta.Service.Models.PP.Database
         public string Path { get; set; }
         public bool DatabaseExists { get; set; }
         public bool LoadFast { get; set; }
-    } S
+    } 
 }
