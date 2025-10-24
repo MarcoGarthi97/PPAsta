@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PPAsta.Abstraction\PPAsta.Abstraction.csproj" />
+    <ProjectReference Include="..\PPAsta.Migration\PPAsta.Migration.csproj" />
     <ProjectReference Include="..\PPAsta.Service\PPAsta.Service.csproj" />
   </ItemGroup>
   <ItemGroup>

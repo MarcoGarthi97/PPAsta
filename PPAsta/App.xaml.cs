@@ -29,6 +29,8 @@ using PPAsta.Repository.Services.FactorySQL;
 using PPAsta.Service.Storages.PP;
 using PPAsta.Service.Services.PP.Version;
 using PPAsta.Service.Services.Windows;
+using PPAsta.Migration.Services.Collection;
+using PPAsta.Migration.Services.Orchestrator;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -59,7 +61,6 @@ namespace PPAsta
                 })
                 .Build();
 
-            InizializeDatabase().Wait();
 
             InitializeComponent();
         }
@@ -68,8 +69,13 @@ namespace PPAsta
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+
+            await InizializeServiceAsync(_host.Services);
+
             var mainWindowService = _host.Services.GetRequiredService<ISrvMainWindowService>();
             m_window = new MainWindow(mainWindowService, _host.Services);
             m_window.Activate();
@@ -82,6 +88,7 @@ namespace PPAsta
             services.AddSharedLibrary();
             services.AddSharedLibraryServices();
             services.AddSharedLibraryRepositories();
+            services.AddSharedLibraryMigrations();
 
             string dbPath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "app.db");
             var connectionString = $"Data Source={dbPath}";
@@ -89,6 +96,14 @@ namespace PPAsta
                 new MdlSqliteConnectionFactory(connectionString));
 
             LoadConfigurations(config);
+        }
+
+        private async Task InizializeServiceAsync(IServiceProvider services)
+        {
+            await InizializeDatabase();
+
+            var migrationService = services.GetRequiredService<IMigrationOrchestrator>();
+            await migrationService.ExecuteMigrationAsync();
         }
 
         private async Task InizializeDatabase()
