@@ -14,7 +14,7 @@
     <PackageReference Include="Scrutor" Version="6.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\Mapper\" />
+    <Folder Include="Services\PP\Helper\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PPAsta.Abstraction\PPAsta.Abstraction.csproj" />

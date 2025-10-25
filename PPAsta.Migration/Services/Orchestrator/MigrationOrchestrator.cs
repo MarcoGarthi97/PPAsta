@@ -21,23 +21,39 @@ namespace PPAsta.Migration.Services.Orchestrator
         private readonly ILogger<MigrationOrchestrator> _logger;
         private readonly IMdlVersionRepository _versionRepository;
         private readonly IMigration_1_0_0 _migration_1_0_0;
+        private readonly IMigration_1_0_1 _migration_1_0_1;
 
-        public MigrationOrchestrator(ILogger<MigrationOrchestrator> logger, IMdlVersionRepository versionRepository, IMigration_1_0_0 migration_1_0_0)
+        public MigrationOrchestrator(ILogger<MigrationOrchestrator> logger, IMdlVersionRepository versionRepository, IMigration_1_0_0 migration_1_0_0, IMigration_1_0_1 migration_1_0_1)
         {
             _logger = logger;
             _versionRepository = versionRepository;
             _migration_1_0_0 = migration_1_0_0;
+            _migration_1_0_1 = migration_1_0_1;
         }
 
         public async Task ExecuteMigrationAsync()
         {
-            string versionDB = await _versionRepository.GetVersionAsync();
-
-            if (!VersionComparison(versionDB, _migration_1_0_0.GetVersion()))
+            try
             {
-                await _migration_1_0_0.ExecuteMigration_1_0_0();
+                string versionDB = await _versionRepository.GetVersionAsync();
 
-                await _versionRepository.InsertVersionAsync("1.0.0");
+                if (!VersionComparison(versionDB, _migration_1_0_0.GetVersion()))
+                {
+                    await _migration_1_0_0.ExecuteMigration_1_0_0();
+
+                    await _versionRepository.InsertVersionAsync(_migration_1_0_0.GetVersion());
+                }
+
+                if (!VersionComparison(versionDB, _migration_1_0_1.GetVersion()))
+                {
+                    await _migration_1_0_1.ExecuteMigration_1_0_1();
+
+                    await _versionRepository.UpdateVersionAsync(_migration_1_0_1.GetVersion());
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
@@ -51,9 +67,30 @@ namespace PPAsta.Migration.Services.Orchestrator
             string[] vDB = versionDB.Split(".");
             string[] vMigration = versionMigration.Split(".");
 
-            return Convert.ToInt32(vDB[0]) >= Convert.ToInt32(vMigration[0])
-                || Convert.ToInt32(vDB[1]) >= Convert.ToInt32(vMigration[1])
-                || Convert.ToInt32(vDB[2]) >= Convert.ToInt32(vMigration[2]);
-        }
+            if (Convert.ToInt32(vDB[0]) > Convert.ToInt32(vMigration[0]))
+            {
+                return true;
+            }
+            else if (Convert.ToInt32(vDB[0]) == Convert.ToInt32(vMigration[0]))
+            {
+                if (Convert.ToInt32(vDB[1]) > Convert.ToInt32(vMigration[1]))
+                {
+                    return true;
+                }
+                else if (Convert.ToInt32(vDB[1]) == Convert.ToInt32(vMigration[1]))
+                {
+                    if (Convert.ToInt32(vDB[2]) >= Convert.ToInt32(vMigration[2]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+            //return Convert.ToInt32(vDB[0]) >= Convert.ToInt32(vMigration[0])
+            //    || Convert.ToInt32(vDB[1]) >= Convert.ToInt32(vMigration[1])
+            //    || Convert.ToInt32(vDB[2]) >= Convert.ToInt32(vMigration[2]);
+        }   
     }
 }

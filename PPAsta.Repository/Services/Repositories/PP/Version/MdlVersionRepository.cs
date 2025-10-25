@@ -15,6 +15,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Version
     {
         Task<string> GetVersionAsync();
         Task InsertVersionAsync(string version);
+        Task UpdateVersionAsync(string version);
     }
 
     public class MdlVersionRepository : BaseRepository<MdlVersion>, IMdlVersionRepository
@@ -40,6 +41,16 @@ namespace PPAsta.Repository.Services.Repositories.PP.Version
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync($"INSERT INTO VERSION (Version, Rud) VALUES (@version, @rud)", new
+            {
+                version = version,
+                rud = DateTime.Now
+            });
+        }
+
+        public async Task UpdateVersionAsync(string version)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync($"UPDATE VERSION SET Version = @version, Rud = @rud", new
             {
                 version = version,
                 rud = DateTime.Now
