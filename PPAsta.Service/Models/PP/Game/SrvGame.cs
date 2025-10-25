@@ -15,6 +15,7 @@ namespace PPAsta.Service.Models.PP.Game
         public decimal StartPrice { get; set; }
         public decimal? EndPrice { get; set; }
         public int Year { get; set; }
+        public bool IsSell { get; set; }
         public DateTime RCD { get; set; }
     }
 }

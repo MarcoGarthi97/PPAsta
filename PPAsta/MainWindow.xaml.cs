@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Pages;
 using PPAsta.Service.Services.Google;
 using PPAsta.Service.Services.Windows;
 using PPAsta.Service.Storages.PP;
@@ -16,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -51,7 +53,53 @@ namespace PPAsta
 
                 var service = _serviceProvider.GetRequiredService<ISrvSpreadsheetService>();
 
-                await service.GetGoogleSpreadsheetAsync(CancellationToken.None);
+                var gamesPage = _serviceProvider.GetRequiredService<GamesPage>();
+                ContentFrame.Content = gamesPage;
+            }
+        }
+
+        private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            if (args.InvokedItemContainer is NavigationViewItem item &&
+                item.Tag is string tag)
+            {
+                switch (tag)
+                {
+                    case "gamesPage":
+                        var tablesPage = _serviceProvider.GetRequiredService<GamesPage>();
+                        ContentFrame.Content = tablesPage;
+                        break;
+                    //case "usersPage":
+                    //    var usersPage = _serviceProvider.GetRequiredService<UsersPage>();
+                    //    ContentFrame.Content = usersPage;
+                    //    break;
+                    //case "eventsPage":
+                    //    var eventsPage = _serviceProvider.GetRequiredService<EventsPage>();
+                    //    ContentFrame.Content = eventsPage;
+                    //    break;
+                    //case "ordersPage":
+                    //    var ordersPage = _serviceProvider.GetRequiredService<OrdersPage>();
+                    //    ContentFrame.Content = ordersPage;
+                    //    break;
+                    //case "settingsPage":
+                    //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
+                    //    ContentFrame.Content = settingsPage;
+                    //    break;
+                }
+            }
+        }
+
+        private async Task LoadConfigurationsAsync()
+        {
+            try
+            {
+                // TODO: Da fare
+                //var helperService = _serviceProvider.GetRequiredService<ISrvHelperService>();
+                //await helperService.LoadConfigurationAsync();
+            }
+            catch (Exception ex)
+            {
+                //await ShowErrorAlertAsync(ex);
             }
         }
     }

@@ -46,7 +46,8 @@ namespace PPAsta.Migration.Services.Migrations
                 Owner VARCHAR NOT NULL,
                 StartPrice DOUBLE NOT NULL,
                 EndPrice DOUBLE NULL,
-                Year REAL NOT NULL,
+                Year INTEGER NOT NULL,
+                IsSell BOOLEAN NOT NULL,
                 RCD DATETIME NOT NULL
                 )
             ");

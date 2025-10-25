@@ -34,5 +34,11 @@ namespace PPAsta.Service.Storages.PP
                 DatabaseConfiguration = new SrvDatabaseConfiguration();
             }
         }
+
+        public static void SetDatabaseExist()
+        {
+            CreateSrvDatabaseConfiguration();
+            DatabaseConfiguration.DatabaseExists = true;
+        }
     }
 }

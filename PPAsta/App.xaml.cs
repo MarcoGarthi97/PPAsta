@@ -83,7 +83,7 @@ namespace PPAsta
 
         private void ConfigureServices(IServiceCollection services, IConfiguration config)
         {
-            services.AddAutoMapper(x => { }, typeof(App).Assembly);
+            services.AddAutoMapper(x => { }, typeof(App), typeof(SrvVersionService));
 
             services.AddSharedLibrary();
             services.AddSharedLibraryServices();
@@ -104,6 +104,8 @@ namespace PPAsta
 
             var migrationService = services.GetRequiredService<IMigrationOrchestrator>();
             await migrationService.ExecuteMigrationAsync();
+
+            SrvAppConfigurationStorage.SetDatabaseExist();
         }
 
         private async Task InizializeDatabase()
