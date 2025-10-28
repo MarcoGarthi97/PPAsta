@@ -145,26 +145,26 @@ namespace PPAsta.ViewModels
                         ? gamesTemp.OrderBy(x => x.Owner).ToList()
                         : gamesTemp.OrderByDescending(x => x.Owner).ToList();
                     break;
-                case "StartPrice":
-                    gamesTemp = isAscending
-                        ? gamesTemp.OrderBy(x => x.StartPrice).ToList()
-                        : gamesTemp.OrderByDescending(x => x.StartPrice).ToList();
-                    break;
-                case "EndPrice":
-                    gamesTemp = isAscending
-                        ? gamesTemp.OrderBy(x => x.EndPrice).ToList()
-                        : gamesTemp.OrderByDescending(x => x.EndPrice).ToList();
-                    break;
-                case "Year":
-                    gamesTemp = isAscending
-                        ? gamesTemp.OrderBy(x => x.Year).ToList()
-                        : gamesTemp.OrderByDescending(x => x.Year).ToList();
-                    break;
-                case "IsSell":
-                    gamesTemp = isAscending
-                        ? gamesTemp.OrderBy(x => x.IsSell).ToList()
-                        : gamesTemp.OrderByDescending(x => x.IsSell).ToList();
-                    break;
+                //case "StartPrice":
+                //    gamesTemp = isAscending
+                //        ? gamesTemp.OrderBy(x => x.StartPrice).ToList()
+                //        : gamesTemp.OrderByDescending(x => x.StartPrice).ToList();
+                //    break;
+                //case "EndPrice":
+                //    gamesTemp = isAscending
+                //        ? gamesTemp.OrderBy(x => x.EndPrice).ToList()
+                //        : gamesTemp.OrderByDescending(x => x.EndPrice).ToList();
+                //    break;
+                //case "Year":
+                //    gamesTemp = isAscending
+                //        ? gamesTemp.OrderBy(x => x.Year).ToList()
+                //        : gamesTemp.OrderByDescending(x => x.Year).ToList();
+                //    break;
+                //case "IsSell":
+                //    gamesTemp = isAscending
+                //        ? gamesTemp.OrderBy(x => x.IsSell).ToList()
+                //        : gamesTemp.OrderByDescending(x => x.IsSell).ToList();
+                //    break;
                 default:
                     break;
             }

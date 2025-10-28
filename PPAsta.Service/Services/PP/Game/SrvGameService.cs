@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Repository.Models.Entities.Game;
+using PPAsta.Repository.Services.FactorySQL;
 using PPAsta.Repository.Services.Repositories.PP.Game;
 using PPAsta.Service.Models.PP.Game;
 using System;
@@ -40,18 +41,29 @@ namespace PPAsta.Service.Services.PP.Game
         public async Task InsertGameAsync(SrvGame game)
         {
             var gameRepository = _mapper.Map<MdlGame>(game);
+            gameRepository.RCD = DateTime.Now;
+            gameRepository.RUD = DateTime.Now;
+
             await _gameRepository.InsertGameAsync(gameRepository);
         }
 
         public async Task InsertGamesAsync(IEnumerable<SrvGame> games)
         {
             var gamesRepository = _mapper.Map<IEnumerable<MdlGame>>(games);
+            foreach (var gameRepository in gamesRepository)
+            {
+                gameRepository.RCD = DateTime.Now;
+                gameRepository.RUD = DateTime.Now;
+            }
+
             await _gameRepository.InsertGamesAsync(gamesRepository);
         }
 
         public async Task UpdateGameAsync(SrvGame game)
         {
             var gameRepository = _mapper.Map<MdlGame>(game);
+            gameRepository.RUD = DateTime.Now;
+
             await _gameRepository.UpdateGameAsync(gameRepository);
         }
 

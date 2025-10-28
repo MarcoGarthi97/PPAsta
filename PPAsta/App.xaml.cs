@@ -105,7 +105,9 @@ namespace PPAsta
             var migrationService = services.GetRequiredService<IMigrationOrchestrator>();
             await migrationService.ExecuteMigrationAsync();
 
+            // TODO: da fare un load configurations
             SrvAppConfigurationStorage.SetDatabaseExist();
+            SrvAppConfigurationStorage.SetGoogleSpreadsheetConfiguration();
         }
 
         private async Task InizializeDatabase()

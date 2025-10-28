@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PPAsta.Repository.Models.Entities.Game;
+using PPAsta.Service.Models.Google;
 using PPAsta.Service.Models.PP.Game;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,11 @@ namespace PPAsta.Service.Services.Mapper
         public SrvGameMapper()
         {
             CreateMap<SrvGame, MdlGame>().ReverseMap();
+
+            CreateMap<SrvSpreadsheet, SrvGame>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(from => from.NomeGioco))
+                .ForMember(dest => dest.Owner, opt => opt.MapFrom(from => from.Proprietario))
+                .ForMember(dest => dest.Year, opt => opt.MapFrom(from => from.Anno));
         }
     }
 }

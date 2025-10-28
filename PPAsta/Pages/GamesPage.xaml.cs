@@ -194,17 +194,17 @@ namespace PPAsta.Pages
             {
                 if (e.Row.DataContext is SrvGame game)
                 {
-                    _logger.LogInformation($"LoadingRow per table {game.Id}, AllUsersPresence: {game.IsSell}");
+                    //_logger.LogInformation($"LoadingRow per table {game.Id}, AllUsersPresence: {game.IsSell}");
 
-                    if (game.IsSell)
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Green);
-                        _logger.LogInformation($"Riga {game.Id} colorata di verde");
-                    }
-                    else
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Transparent);
-                    }
+                    //if (game.IsSell)
+                    //{
+                    //    e.Row.Background = new SolidColorBrush(Colors.Green);
+                    //    _logger.LogInformation($"Riga {game.Id} colorata di verde");
+                    //}
+                    //else
+                    //{
+                    //    e.Row.Background = new SolidColorBrush(Colors.Transparent);
+                    //}
                 }
                 else
                 {

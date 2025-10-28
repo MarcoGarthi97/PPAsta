@@ -11,5 +11,6 @@ namespace PPAsta.Service.Models.Google
         public string NomeGioco { get; set; }
         public string Proprietario { get; set; }
         public decimal? Prezzo { get; set; }
+        public int Anno { get; set; }
     }
 }

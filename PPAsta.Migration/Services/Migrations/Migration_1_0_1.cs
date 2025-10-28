@@ -36,7 +36,9 @@ namespace PPAsta.Migration.Services.Migrations
             await connection.QueryAsync($@"CREATE TABLE HELPERS (
                 ID INTEGER PRIMARY KEY,
                 Key VARCHAR NOT NULL,
-                Json VARCHAR NOT NULL
+                Json VARCHAR NOT NULL,
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
                 )
             ");
 
@@ -44,13 +46,24 @@ namespace PPAsta.Migration.Services.Migrations
                 ID INTEGER PRIMARY KEY,
                 Name VARCHAR NOT NULL,
                 Owner VARCHAR NOT NULL,
-                StartPrice DOUBLE NOT NULL,
-                EndPrice DOUBLE NULL,
                 Year INTEGER NOT NULL,
-                IsSell BOOLEAN NOT NULL,
-                RCD DATETIME NOT NULL
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
                 )
             ");
+
+            await connection.QueryAsync($@"CREATE TABLE PAYMENT (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                PaymentID INTEGER NOT NULL,
+                PaymentProcess INTEGER NOT NULL,
+                SellingPrice REAL NOT NULL,
+                Buyer VARCHAR NULL,
+                PurchasePrice REAL NULL,
+                ShareOwner REAL NULL,
+                SharePP REAL NULL,
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
+            );");
         }
     }
 }

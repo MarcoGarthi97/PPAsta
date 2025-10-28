@@ -13,7 +13,7 @@ namespace PPAsta.Service.Storages.PP
         public static SrvDatabaseConfiguration DatabaseConfiguration { get; private set; }
         public static SrvGoogleSpreadsheetConfiguration GoogleSpreadsheetConfiguration { get; private set; }
 
-        public static void SetGoogleSpreadsheetConfiguration(string url)
+        public static void SetGoogleSpreadsheetConfiguration(string url = "")
         {
             // TODO: finire 
             string sheetID = "1nSSKkhASvRuoBdfUj_ztC9AM572qVZZ9lVvm5KUELIo";
