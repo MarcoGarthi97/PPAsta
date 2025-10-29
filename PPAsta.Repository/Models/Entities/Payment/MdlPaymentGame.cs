@@ -9,17 +9,19 @@ using System.Threading.Tasks;
 
 namespace PPAsta.Repository.Models.Entities.Payment
 {
-    [Table("PAYMENT")]
-    public class MdlPayment : MdlFieldsDB
+    [Table("PAYMENTGAMES")]
+    public class MdlPaymentGame : MdlFieldsDB
     {
         [Column("ID")]
         public int Id { get; set; }
+        [Column("GameID")]
+        public int GameId { get; set; }
         [Column("PaymentID")]
         public int PaymentId { get; set; }
         [Column("Buyer")]
         public string? Buyer { get; set; }
         [Column("PaymentProcess")]
-        public PayementProcess PayementProcess { get; set; }
+        public PaymentProcess PaymentProcess { get; set; }
         [Column("SellingPrice")]
         public decimal SellingPrice { get; set; }
         [Column("PurchasePrice")]

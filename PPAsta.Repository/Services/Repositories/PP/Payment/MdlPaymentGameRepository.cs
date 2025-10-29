@@ -13,44 +13,44 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
 {
     public interface IMdlPaymentRepository : IForServiceCollectionExtension
     {
-        Task DeletePaymentAsync(MdlPayment Payment);
-        Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync();
-        Task InsertPaymentAsync(MdlPayment Payment);
-        Task InsertPaymentsAsync(IEnumerable<MdlPayment> Payments);
-        Task UpdatePaymentAsync(MdlPayment Payment);
+        Task DeletePaymentAsync(MdlPaymentGame Payment);
+        Task<IEnumerable<MdlPaymentGame>> GetAllPaymentsAsync();
+        Task InsertPaymentAsync(MdlPaymentGame Payment);
+        Task InsertPaymentsAsync(IEnumerable<MdlPaymentGame> Payments);
+        Task UpdatePaymentAsync(MdlPaymentGame Payment);
     }
 
-    public class MdlPaymentRepository : BaseRepository<MdlPayment>, IMdlPaymentRepository
+    public class MdlPaymentGameRepository : BaseRepository<MdlPaymentGame>, IMdlPaymentRepository
     {
-        public MdlPaymentRepository(IDatabaseConnectionFactory connectionFactory) : base(connectionFactory)
+        public MdlPaymentGameRepository(IDatabaseConnectionFactory connectionFactory) : base(connectionFactory)
         {
         }
 
-        public async Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<MdlPaymentGame>> GetAllPaymentsAsync()
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.GetAllAsync<MdlPayment>();
+            return await connection.GetAllAsync<MdlPaymentGame>();
         }
 
-        public async Task InsertPaymentAsync(MdlPayment Payment)
+        public async Task InsertPaymentAsync(MdlPaymentGame Payment)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.InsertAsync(Payment);
         }
 
-        public async Task InsertPaymentsAsync(IEnumerable<MdlPayment> Payments)
+        public async Task InsertPaymentsAsync(IEnumerable<MdlPaymentGame> Payments)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.BulkInsertAsync(Payments);
         }
 
-        public async Task UpdatePaymentAsync(MdlPayment Payment)
+        public async Task UpdatePaymentAsync(MdlPaymentGame Payment)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.UpdateAsync(Payment);
         }
 
-        public async Task DeletePaymentAsync(MdlPayment Payment)
+        public async Task DeletePaymentAsync(MdlPaymentGame Payment)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.DeleteAsync(Payment);

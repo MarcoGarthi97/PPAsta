@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
+using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.Google;
 using PPAsta.Service.Models.PP.Game;
+using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Services.PP.Game;
+using PPAsta.Service.Services.PP.Payment;
 using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
@@ -29,12 +32,14 @@ namespace PPAsta.Service.Services.Google
         private readonly IMapper _mapper;
 
         private readonly ISrvGameService _gameService;
+        private readonly ISrvPaymentService _paymentService;
 
-        public SrvSpreadsheetService(ILogger<SrvSpreadsheetService> logger, IMapper mapper, ISrvGameService gameService)
+        public SrvSpreadsheetService(ILogger<SrvSpreadsheetService> logger, IMapper mapper, ISrvGameService gameService, ISrvPaymentService paymentService)
         {
             _logger = logger;
             _mapper = mapper;
             _gameService = gameService;
+            _paymentService = paymentService;
         }
 
         public async Task ImportFromGoogleSpreadsheetToDatabaseAsync()
@@ -50,11 +55,67 @@ namespace PPAsta.Service.Services.Google
             await _gameService.InsertGamesAsync(games);
 
             games = await _gameService.GetAllGamesAsync();
+
+            var payments = BuildPayments(games, rows);
+            await _paymentService.InsertPaymentsAsync(payments);
         }
 
-        private async Task CreatePaymentForGamesAsync(IEnumerable<SrvGame> games, IEnumerable<SrvSpreadsheet> rows)
+        private IEnumerable<SrvPaymentGame> BuildPayments(IEnumerable<SrvGame> games, IEnumerable<SrvSpreadsheet> rows)
         {
+            Dictionary<string, List<decimal>> dictRows = new Dictionary<string, List<decimal>>();
 
+            foreach (var x in rows)
+            {
+                decimal price = 1;
+
+                if (x.Prezzo.HasValue)
+                {
+                    price = x.Prezzo.Value / 100;    
+                }
+
+                if (dictRows.ContainsKey(x.NomeGioco + "-" + x.Proprietario))
+                {
+                    dictRows[x.NomeGioco + "-" + x.Proprietario].Add(price);
+                }
+                else
+                {
+                    dictRows.Add(x.NomeGioco + "-" + x.Proprietario, new List<decimal> { price });
+                }
+            }
+
+            Dictionary<string, List<int>> dictGames = new Dictionary<string, List<int>>();
+
+            foreach (var x in games)
+            {
+                if (dictGames.ContainsKey(x.Name + "-" + x.Owner))
+                {
+                    dictGames[x.Name + "-" + x.Owner].Add(x.Id);
+                }
+                else
+                {
+                    dictGames.Add(x.Name + "-" + x.Owner, new List<int> { x.Id });
+                }
+            }
+
+            var payments = new List<SrvPaymentGame>();
+
+            foreach (var x in games)
+            {
+                if (dictRows.ContainsKey(x.Name + "-" + x.Owner) && dictGames.ContainsKey(x.Name + "-" + x.Owner))
+                {
+                    payments.Add(new SrvPaymentGame
+                    {
+                        GameId = dictGames[x.Name + "-" + x.Owner].First(),
+                        SellingPrice = dictRows[x.Name + "-" + x.Owner].First(),
+                        PaymentProcess = PaymentProcess.Insert
+                    });
+
+                    dictGames[x.Name + "-" + x.Owner].RemoveAt(0);
+                    dictRows[x.Name + "-" + x.Owner].RemoveAt(0);
+                }
+            }
+
+            return payments;
         }
 
         private async Task<IEnumerable<SrvSpreadsheet>> GetGoogleSpreadsheetAsync()

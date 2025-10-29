@@ -40,10 +40,14 @@
             Sorting="DataGrid_Sorting"
             LoadingRow="DataGrid_LoadingRow">
             <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Processo" Tag="PaymentProcess" Binding="{Binding PaymentProcess}" />
                 <controls:DataGridTextColumn Header="Name" Tag="Name" Binding="{Binding Name}" />
                 <controls:DataGridTextColumn Header="Proprietario" Tag="Owner" Binding="{Binding Owner}" />
-                <controls:DataGridTextColumn Header="Prezzo d'asta" Tag="StartPrice" Binding="{Binding StartPrice}" />
-                <controls:DataGridTextColumn Header="Prezzo finale" Tag="EndPrice" Binding="{Binding EndPrice}" />
+                <controls:DataGridTextColumn Header="Prezzo di vendita" Tag="SellingPrice" Binding="{Binding SellingPrice}" />
+                <controls:DataGridTextColumn Header="Acquirente" Tag="Buyer" Binding="{Binding Buyer}" />
+                <controls:DataGridTextColumn Header="Prezzo d'acquisto" Tag="PurchasePrice" Binding="{Binding PurchasePrice}" />
+                <controls:DataGridTextColumn Header="Quota proprietario" Tag="ShareOwner" Binding="{Binding ShareOwner}" />
+                <controls:DataGridTextColumn Header="Quota PP" Tag="SharePP" Binding="{Binding SharePP}" />
                 <controls:DataGridTextColumn Header="Anno" Tag="Year" Binding="{Binding Year}" />
 
                 <controls:DataGridTemplateColumn Header="Azioni">

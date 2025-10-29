@@ -34,7 +34,7 @@ namespace PPAsta.Migration.Services.Migrations
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             await connection.QueryAsync($@"CREATE TABLE HELPERS (
-                ID INTEGER PRIMARY KEY,
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Key VARCHAR NOT NULL,
                 Json VARCHAR NOT NULL,
                 RCD DATETIME NOT NULL,
@@ -43,7 +43,7 @@ namespace PPAsta.Migration.Services.Migrations
             ");
 
             await connection.QueryAsync($@"CREATE TABLE GAMES (
-                ID INTEGER PRIMARY KEY,
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name VARCHAR NOT NULL,
                 Owner VARCHAR NOT NULL,
                 Year INTEGER NOT NULL,
@@ -52,8 +52,9 @@ namespace PPAsta.Migration.Services.Migrations
                 )
             ");
 
-            await connection.QueryAsync($@"CREATE TABLE PAYMENT (
+            await connection.QueryAsync($@"CREATE TABLE PAYMENTGAMES (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                GameID INTEGER NOT NULL,
                 PaymentID INTEGER NOT NULL,
                 PaymentProcess INTEGER NOT NULL,
                 SellingPrice REAL NOT NULL,

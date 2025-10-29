@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Storages.PP;
@@ -192,23 +193,26 @@ namespace PPAsta.Pages
         {
             try
             {
-                if (e.Row.DataContext is SrvGame game)
+                if (e.Row.DataContext is SrvGameDetail gameDetail)
                 {
-                    //_logger.LogInformation($"LoadingRow per table {game.Id}, AllUsersPresence: {game.IsSell}");
+                    _logger.LogInformation($"LoadingRow per table {gameDetail.Id}");
 
-                    //if (game.IsSell)
-                    //{
-                    //    e.Row.Background = new SolidColorBrush(Colors.Green);
-                    //    _logger.LogInformation($"Riga {game.Id} colorata di verde");
-                    //}
-                    //else
-                    //{
-                    //    e.Row.Background = new SolidColorBrush(Colors.Transparent);
-                    //}
+                    if (gameDetail.PaymentProcess == PaymentProcess.Paid)
+                    {
+                        e.Row.Background = new SolidColorBrush(Colors.Green);
+                    }
+                    else if (gameDetail.PaymentProcess == PaymentProcess.ToBePaid)
+                    {
+                        e.Row.Background = new SolidColorBrush(Colors.Yellow);
+                    }
+                    else
+                    {
+                        e.Row.Background = new SolidColorBrush(Colors.Transparent);
+                    }
                 }
                 else
                 {
-                    _logger.LogWarning("DataContext non è di tipo SrvInformationTable");
+                    _logger.LogWarning("DataContext non è di tipo SrvGameDetail");
                 }
             }
             catch (Exception ex)

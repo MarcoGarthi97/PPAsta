@@ -19,14 +19,14 @@ namespace PPAsta.ViewModels
         private string _textResearch = "";
         private string? _totalRecordsText;
         private string? _pageText;
-        private IEnumerable<SrvGame> _gamesList = new List<SrvGame>();
+        private IEnumerable<SrvGameDetail> _gamesList = new List<SrvGameDetail>();
 
         public IAsyncRelayCommand LoadGamesCommand { get; }
 
         public int _page = 0;
         public int _count = -1;
 
-        public ObservableCollection<SrvGame> Games { get; } = new ObservableCollection<SrvGame>();
+        public ObservableCollection<SrvGameDetail> Games { get; } = new ObservableCollection<SrvGameDetail>();
 
         public GameViewModel(ISrvGameService gameService)
         {
@@ -59,13 +59,13 @@ namespace PPAsta.ViewModels
             RecordsPagination(gamesTemp);
         }
 
-        private async Task<IEnumerable<SrvGame>> GetGamesFilteredAsync()
+        private async Task<IEnumerable<SrvGameDetail>> GetGamesFilteredAsync()
         {
-            IEnumerable<SrvGame> gamesTemp = null;
+            IEnumerable<SrvGameDetail> gamesTemp = null;
 
             if (!_gamesList.Any())
             {
-                _gamesList = await _gameService.GetAllGamesAsync();
+                _gamesList = await _gameService.GetAllGameDetailsAsync();
             }
 
             var predicate = BuildPredicate();
@@ -78,7 +78,7 @@ namespace PPAsta.ViewModels
             return gamesTemp;
         }
 
-        private Func<SrvGame, bool> BuildPredicate()
+        private Func<SrvGameDetail, bool> BuildPredicate()
         {
             return e => e.Name.ToLower().Contains(_textResearch.ToLower())
                         || e.Owner.ToLower().Contains(_textResearch.ToLower());
@@ -89,7 +89,7 @@ namespace PPAsta.ViewModels
             return _count;
         }
 
-        private void RecordsPagination(IEnumerable<SrvGame> gamesTemp)
+        private void RecordsPagination(IEnumerable<SrvGameDetail> gamesTemp)
         {
             int skip = _page * 50;
             gamesTemp = gamesTemp.Skip(skip).Take(50);
@@ -97,7 +97,7 @@ namespace PPAsta.ViewModels
             BindGrid(gamesTemp);
         }
 
-        private void BindGrid(IEnumerable<SrvGame> gamesTemp)
+        private void BindGrid(IEnumerable<SrvGameDetail> gamesTemp)
         {
             Games.Clear();
 
@@ -113,8 +113,8 @@ namespace PPAsta.ViewModels
             {
                 _page--;
 
-                var ordersTemp = await GetGamesFilteredAsync();
-                RecordsPagination(ordersTemp);
+                var gamesTemp = await GetGamesFilteredAsync();
+                RecordsPagination(gamesTemp);
             }
         }
 
@@ -124,14 +124,14 @@ namespace PPAsta.ViewModels
             {
                 _page++;
 
-                var ordersTemp = await GetGamesFilteredAsync();
-                RecordsPagination(ordersTemp);
+                var gamesTemp = await GetGamesFilteredAsync();
+                RecordsPagination(gamesTemp);
             }
         }
 
         public async Task DataSortAsync(string propertyName, bool isAscending)
         {
-            var gamesTemp = await GetGamesFilteredAsync(); 
+            var gamesTemp = await GetGamesFilteredAsync();
 
             switch (propertyName)
             {
@@ -145,31 +145,47 @@ namespace PPAsta.ViewModels
                         ? gamesTemp.OrderBy(x => x.Owner).ToList()
                         : gamesTemp.OrderByDescending(x => x.Owner).ToList();
                     break;
-                //case "StartPrice":
-                //    gamesTemp = isAscending
-                //        ? gamesTemp.OrderBy(x => x.StartPrice).ToList()
-                //        : gamesTemp.OrderByDescending(x => x.StartPrice).ToList();
-                //    break;
-                //case "EndPrice":
-                //    gamesTemp = isAscending
-                //        ? gamesTemp.OrderBy(x => x.EndPrice).ToList()
-                //        : gamesTemp.OrderByDescending(x => x.EndPrice).ToList();
-                //    break;
-                //case "Year":
-                //    gamesTemp = isAscending
-                //        ? gamesTemp.OrderBy(x => x.Year).ToList()
-                //        : gamesTemp.OrderByDescending(x => x.Year).ToList();
-                //    break;
-                //case "IsSell":
-                //    gamesTemp = isAscending
-                //        ? gamesTemp.OrderBy(x => x.IsSell).ToList()
-                //        : gamesTemp.OrderByDescending(x => x.IsSell).ToList();
-                //    break;
+                case "Year":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.Year).ToList()
+                        : gamesTemp.OrderByDescending(x => x.Year).ToList();
+                    break;
+                case "Buyer":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.Buyer).ToList()
+                        : gamesTemp.OrderByDescending(x => x.Buyer).ToList();
+                    break;
+                case "PaymentProcess":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.PaymentProcess).ToList()
+                        : gamesTemp.OrderByDescending(x => x.PaymentProcess).ToList();
+                    break;
+                case "SellingPrice":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.SellingPrice).ToList()
+                        : gamesTemp.OrderByDescending(x => x.SellingPrice).ToList();
+                    break;
+                case "PurchasePrice":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.PurchasePrice).ToList()
+                        : gamesTemp.OrderByDescending(x => x.PurchasePrice).ToList();
+                    break;
+                case "ShareOwner":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.ShareOwner).ToList()
+                        : gamesTemp.OrderByDescending(x => x.ShareOwner).ToList();
+                    break;
+                case "SharePP":
+                    gamesTemp = isAscending
+                        ? gamesTemp.OrderBy(x => x.SharePP).ToList()
+                        : gamesTemp.OrderByDescending(x => x.SharePP).ToList();
+                    break;
                 default:
                     break;
             }
 
-            RecordsPagination(gamesTemp); 
+
+                    RecordsPagination(gamesTemp); 
         }
     }
 }

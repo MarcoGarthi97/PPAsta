@@ -15,6 +15,7 @@ namespace PPAsta.Service.Services.PP.Game
     public interface ISrvGameService : IForServiceCollectionExtension
     {
         Task DeleteGameAsync(SrvGame game);
+        Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsAsync();
         Task<IEnumerable<SrvGame>> GetAllGamesAsync();
         Task InsertGameAsync(SrvGame game);
         Task InsertGamesAsync(IEnumerable<SrvGame> games);
@@ -36,6 +37,12 @@ namespace PPAsta.Service.Services.PP.Game
         {
             var gamesRepository = await _gameRepository.GetAllGamesAsync();
             return _mapper.Map<IEnumerable<SrvGame>>(gamesRepository);
+        }
+
+        public async Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsAsync()
+        {
+            var gamesRepository = await _gameRepository.GetAllGameDetailsAsync();
+            return _mapper.Map<IEnumerable<SrvGameDetail>>(gamesRepository);
         }
 
         public async Task InsertGameAsync(SrvGame game)
