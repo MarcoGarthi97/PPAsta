@@ -34,23 +34,37 @@ namespace PPAsta.Migration.Services.Migrations
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             await connection.QueryAsync($@"CREATE TABLE HELPERS (
-                ID INTEGER PRIMARY KEY,
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Key VARCHAR NOT NULL,
-                Json VARCHAR NOT NULL
+                Json VARCHAR NOT NULL,
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
                 )
             ");
 
             await connection.QueryAsync($@"CREATE TABLE GAMES (
-                ID INTEGER PRIMARY KEY,
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Name VARCHAR NOT NULL,
                 Owner VARCHAR NOT NULL,
-                StartPrice DOUBLE NOT NULL,
-                EndPrice DOUBLE NULL,
                 Year INTEGER NOT NULL,
-                IsSell BOOLEAN NOT NULL,
-                RCD DATETIME NOT NULL
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
                 )
             ");
+
+            await connection.QueryAsync($@"CREATE TABLE PAYMENTGAMES (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                GameID INTEGER NOT NULL,
+                PaymentID INTEGER NOT NULL,
+                PaymentProcess INTEGER NOT NULL,
+                SellingPrice REAL NOT NULL,
+                Buyer VARCHAR NULL,
+                PurchasePrice REAL NULL,
+                ShareOwner REAL NULL,
+                SharePP REAL NULL,
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
+            );");
         }
     }
 }

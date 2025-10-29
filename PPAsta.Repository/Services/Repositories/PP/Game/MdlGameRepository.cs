@@ -16,6 +16,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
     public interface IMdlGameRepository : IForServiceCollectionExtension
     {
         Task DeleteGameAsync(MdlGame game);
+        Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsAsync();
         Task<IEnumerable<MdlGame>> GetAllGamesAsync();
         Task InsertGameAsync(MdlGame game);
         Task InsertGamesAsync(IEnumerable<MdlGame> games);
@@ -56,6 +57,18 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.DeleteAsync(game);
+        }
+
+        public async Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsAsync()
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = @$"
+                SELECT * FROM GAMES S
+                JOIN PAYMENTGAMES P ON S.ID = P.GameID 
+            ";
+
+            return await connection.QueryAsync<MdlGameDetail>(sql);
         }
     }
 }

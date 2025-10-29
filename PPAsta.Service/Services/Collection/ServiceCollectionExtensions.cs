@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PPAsta.Abstraction.Models.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -27,4 +26,5 @@ namespace PPAsta.Service.Services.Collection
             return services;
         }
     }
+
 }

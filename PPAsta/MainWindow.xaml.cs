@@ -51,7 +51,8 @@ namespace PPAsta
                 _isWindowLoaded = true;
                 this.Activated -= MainWindow_Activated; // Rimuovi l'event handler
 
-                var service = _serviceProvider.GetRequiredService<ISrvSpreadsheetService>();
+                //var service = _serviceProvider.GetRequiredService<ISrvSpreadsheetService>();
+                //await service.ImportFromGoogleSpreadsheetToDatabaseAsync();
 
                 var gamesPage = _serviceProvider.GetRequiredService<GamesPage>();
                 ContentFrame.Content = gamesPage;
