@@ -47,6 +47,8 @@ namespace PPAsta.Pages
             _buyerViewModel = (BuyerViewModel)DataContext;
 
             LoadComponents();
+
+            this.Unloaded += Page_Unloaded;
         }
 
         private void LoadComponents()
@@ -205,7 +207,6 @@ namespace PPAsta.Pages
 
         private async Task TypeOfInsertAsync()
         {
-            _currentDialog?.Hide();
             var singleAddButton = new Button
             {
                 Name = "SingleAdd",
@@ -222,7 +223,7 @@ namespace PPAsta.Pages
             };
             multipleAddButton.Click += MultipleAddButton_Click;
 
-            _currentDialog = new ContentDialog
+            var dialog = new ContentDialog
             {
                 Title = "Tipologia inserimento",
                 PrimaryButtonText = "Conferma",
@@ -239,12 +240,11 @@ namespace PPAsta.Pages
                 }
             };
 
-            await _currentDialog.ShowAsync();
+            await ShowDialogSafeAsync(dialog);
         }
 
         private async void SingleAddButton_Click(object sender, RoutedEventArgs e)
         {
-            _currentDialog?.Hide();
             await OpenBuyerDialogAsync();
         }
 
@@ -252,7 +252,6 @@ namespace PPAsta.Pages
         {
             try
             {
-                _currentDialog?.Hide();
                 var picker = new FileOpenPicker();
 
                 var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
@@ -298,7 +297,6 @@ namespace PPAsta.Pages
 
         private async Task OpenBuyerDialogAsync(SrvBuyer? buyer = null)
         {
-            _currentDialog?.Hide();
             var template = (DataTemplate)this.Resources["BuyerDialog"];
 
             var content = template.LoadContent() as StackPanel;
@@ -323,7 +321,7 @@ namespace PPAsta.Pages
                 yearBox.Text = year.ToString();
             }
 
-            _currentDialog = new ContentDialog
+            var dialog = new ContentDialog
             {
                 Title = title,
                 PrimaryButtonText = "Conferma",
@@ -342,16 +340,16 @@ namespace PPAsta.Pages
                                Int32.TryParse(yearBox.Text, out int y) &&
                                y > 0;
 
-                _currentDialog.IsPrimaryButtonEnabled = isValid;
+                dialog.IsPrimaryButtonEnabled = isValid;
             }
 
-            _currentDialog.Loaded += (s, e) => ValidateFields();
+            dialog.Loaded += (s, e) => ValidateFields();
 
             nameBox.TextChanged += (s, e) => ValidateFields();
             numberBox.TextChanged += (s, e) => ValidateFields();
             yearBox.TextChanged += (s, e) => ValidateFields();
 
-            var result = await _currentDialog.ShowAsync();
+            var result = await ShowDialogSafeAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -391,8 +389,7 @@ namespace PPAsta.Pages
 
         private async Task OpenDeleteDialogAsync(SrvBuyer buyer)
         {
-            _currentDialog?.Hide();
-            _currentDialog = new ContentDialog
+            var dialog = new ContentDialog
             {
                 Title = "Elimina Compratore",
                 PrimaryButtonText = "Conferma",
@@ -408,7 +405,7 @@ namespace PPAsta.Pages
                 }
             };
 
-            var result = await _currentDialog.ShowAsync();
+            var result = await ShowDialogSafeAsync(dialog);
 
             if (result == ContentDialogResult.Primary)
             {
@@ -418,10 +415,9 @@ namespace PPAsta.Pages
 
         private async Task ExceptionDialogAsync(Exception ex)
         {
-            _currentDialog?.Hide();
             var errorText = ex.Message;
 
-            _currentDialog = new ContentDialog
+            var dialog = new ContentDialog
             {
                 Title = "Errore",
                 CloseButtonText = "Ok",
@@ -436,7 +432,43 @@ namespace PPAsta.Pages
                 }
             };
 
-            await _currentDialog.ShowAsync();
+            await ShowDialogSafeAsync(dialog);
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_currentDialog != null && this.XamlRoot != null)
+                {
+                    _currentDialog = null;
+                }
+                _currentDialog = null;
+                this.Unloaded -= Page_Unloaded;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private async Task<ContentDialogResult> ShowDialogSafeAsync(ContentDialog dialog)
+        {
+            try
+            {
+                _currentDialog?.Hide();
+
+                // Aspetta un momento per permettere al dialog precedente di chiudersi
+                await Task.Delay(300);
+
+                _currentDialog = dialog;
+                return await _currentDialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore dialog");
+                return ContentDialogResult.None;
+            }
         }
     }
 }

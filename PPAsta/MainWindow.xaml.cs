@@ -107,7 +107,20 @@ namespace PPAsta
 
         private void MainWindow_Closed(object sender, WindowEventArgs args)
         {
-            Application.Current.Exit();
+            try
+            {
+                if (ContentFrame?.Content is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+
+                ContentFrame.Content = null;
+                // Attendi brevemente per permettere la pulizia
+                System.Threading.Thread.Sleep(500);
+
+                Application.Current.Exit();
+            }
+            catch { }
         }
     }
 }
