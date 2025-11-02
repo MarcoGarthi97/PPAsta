@@ -43,6 +43,7 @@ namespace PPAsta
     public partial class App : Application
     {
         private IHost _host;
+        public static Window? MainWindow { get; private set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -77,8 +78,16 @@ namespace PPAsta
             await InizializeServiceAsync(_host.Services);
 
             var mainWindowService = _host.Services.GetRequiredService<ISrvMainWindowService>();
-            m_window = new MainWindow(mainWindowService, _host.Services);
-            m_window.Activate();
+            MainWindow = new MainWindow(mainWindowService, _host.Services);
+            //MainWindow.Closed += MainWindow_Closed;
+
+            MainWindow.Closed += (s, e) =>
+            {
+                MainWindow = null;
+                //(_host as IDisposable)?.Dispose();
+            };
+
+            MainWindow.Activate();
         }
 
         private void ConfigureServices(IServiceCollection services, IConfiguration config)
@@ -129,6 +138,9 @@ namespace PPAsta
         {
         }
 
-        private Window? m_window;
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            MainWindow = null;
+        }
     }
 }

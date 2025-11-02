@@ -22,13 +22,15 @@ namespace PPAsta.Migration.Services.Orchestrator
         private readonly IMdlVersionRepository _versionRepository;
         private readonly IMigration_1_0_0 _migration_1_0_0;
         private readonly IMigration_1_0_1 _migration_1_0_1;
+        private readonly IMigration_1_0_2 _migration_1_0_2;
 
-        public MigrationOrchestrator(ILogger<MigrationOrchestrator> logger, IMdlVersionRepository versionRepository, IMigration_1_0_0 migration_1_0_0, IMigration_1_0_1 migration_1_0_1)
+        public MigrationOrchestrator(ILogger<MigrationOrchestrator> logger, IMdlVersionRepository versionRepository, IMigration_1_0_0 migration_1_0_0, IMigration_1_0_1 migration_1_0_1, IMigration_1_0_2 migration_1_0_2)
         {
             _logger = logger;
             _versionRepository = versionRepository;
             _migration_1_0_0 = migration_1_0_0;
             _migration_1_0_1 = migration_1_0_1;
+            _migration_1_0_2 = migration_1_0_2;
         }
 
         public async Task ExecuteMigrationAsync()
@@ -49,6 +51,13 @@ namespace PPAsta.Migration.Services.Orchestrator
                     await _migration_1_0_1.ExecuteMigration_1_0_1();
 
                     await _versionRepository.UpdateVersionAsync(_migration_1_0_1.GetVersion());
+                }
+
+                if (!VersionComparison(versionDB, _migration_1_0_2.GetVersion()))
+                {
+                    await _migration_1_0_2.ExecuteMigration_1_0_2();
+
+                    await _versionRepository.UpdateVersionAsync(_migration_1_0_2.GetVersion());
                 }
             }
             catch (Exception ex)
