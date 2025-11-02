@@ -50,6 +50,7 @@ namespace PPAsta
             {
                 _isWindowLoaded = true;
                 this.Activated -= MainWindow_Activated; // Rimuovi l'event handler
+                this.Closed += MainWindow_Closed;
 
                 //var service = _serviceProvider.GetRequiredService<ISrvSpreadsheetService>();
                 //await service.ImportFromGoogleSpreadsheetToDatabaseAsync();
@@ -78,14 +79,14 @@ namespace PPAsta
                     //    var eventsPage = _serviceProvider.GetRequiredService<EventsPage>();
                     //    ContentFrame.Content = eventsPage;
                     //    break;
-                    //case "ordersPage":
-                    //    var ordersPage = _serviceProvider.GetRequiredService<OrdersPage>();
-                    //    ContentFrame.Content = ordersPage;
-                    //    break;
-                    //case "settingsPage":
-                    //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
-                    //    ContentFrame.Content = settingsPage;
-                    //    break;
+                    case "buyersPage":
+                        var buyersPage = _serviceProvider.GetRequiredService<BuyersPage>();
+                        ContentFrame.Content = buyersPage;
+                        break;
+                        //case "settingsPage":
+                        //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
+                        //    ContentFrame.Content = settingsPage;
+                        //    break;
                 }
             }
         }
@@ -102,6 +103,11 @@ namespace PPAsta
             {
                 //await ShowErrorAlertAsync(ex);
             }
+        }
+
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
+        {
+            Application.Current.Exit();
         }
     }
 }

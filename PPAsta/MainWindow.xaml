@@ -21,6 +21,7 @@
 
         <muxc:NavigationView.MenuItems>
             <muxc:NavigationViewItem Content="Games" Icon="View" Tag="gamesPage"/>
+            <muxc:NavigationViewItem Content="Buyers" Icon="View" Tag="buyersPage"/>
         </muxc:NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame">

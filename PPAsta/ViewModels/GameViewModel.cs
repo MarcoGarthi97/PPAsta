@@ -183,9 +183,8 @@ namespace PPAsta.ViewModels
                 default:
                     break;
             }
-
-
-                    RecordsPagination(gamesTemp); 
+            
+            RecordsPagination(gamesTemp); 
         }
     }
 }

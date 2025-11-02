@@ -46,8 +46,8 @@ namespace PPAsta.Pages
         {
             if (SrvAppConfigurationStorage.DatabaseConfiguration.DatabaseExists)
             {
-                LoadOrdersAsync();
-                OrdersCount();
+                LoadGamesAsync();
+                GamesCount();
             }
             else
             {
@@ -82,7 +82,7 @@ namespace PPAsta.Pages
             }
         }
 
-        private async void LoadOrdersAsync()
+        private async void LoadGamesAsync()
         {
             try
             {
@@ -156,7 +156,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                LoadOrdersAsync();
+                LoadGamesAsync();
             }
             catch (Exception ex)
             {
@@ -164,7 +164,7 @@ namespace PPAsta.Pages
             }
         }
 
-        private void OrdersCount()
+        private void GamesCount()
         {
             try
             {
