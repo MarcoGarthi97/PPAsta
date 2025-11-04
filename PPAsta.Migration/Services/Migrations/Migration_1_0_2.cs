@@ -42,6 +42,18 @@ namespace PPAsta.Migration.Services.Migrations
                 RUD DATETIME NOT NULL
                 )
             ");
+
+            await connection.QueryAsync($@"CREATE TABLE PAYMENTS (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                BuyerID INTEGER NOT NULL,
+                PaymentProcess INTEGER NOT NULL,
+                TotalPurchasePrice REAL NOT NULL,
+                TotalShareOwner REAL NOT NULL,
+                TotalSharePP REAL NOT NULL,
+                RCD DATETIME NOT NULL,
+                RUD DATETIME NOT NULL
+                )
+            ");
         }
     }
 }

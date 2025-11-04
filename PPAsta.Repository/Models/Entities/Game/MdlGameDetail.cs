@@ -18,7 +18,7 @@ namespace PPAsta.Repository.Models.Entities.Game
         [Column("Buyer")]
         public string? Buyer { get; set; }
         [Column("PaymentProcess")]
-        public PaymentProcess PaymentProcess { get; set; }
+        public PaymentGameProcess PaymentProcess { get; set; }
         [Column("SellingPrice")]
         public decimal SellingPrice { get; set; }
         [Column("PurchasePrice")]

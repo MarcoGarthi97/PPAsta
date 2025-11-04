@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Storages.PP;
 using PPAsta.ViewModels;
@@ -18,8 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -33,6 +36,7 @@ namespace PPAsta.Pages
     public sealed partial class GamesPage : Page, IForServiceCollectionExtension
     {
         private readonly ILogger<GamesPage> _logger;
+        private ContentDialog _currentDialog;
         public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger)
         {
             InitializeComponent();
@@ -79,6 +83,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore durante la visualizzazione dell'alert");
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -92,6 +97,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -105,6 +111,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -118,6 +125,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -149,10 +157,11 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        private async void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -161,10 +170,11 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void GamesCount()
+        private async void GamesCount()
         {
             try
             {
@@ -174,22 +184,58 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private async void RowButton_Click(object sender, RoutedEventArgs e)
+        private async void PaymentButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // TODO: Da fare
+                var button = sender as Button;
+                
+                if (button?.Tag != null)
+                {
+                    var game = button.Tag as SrvGameDetail;
+                    await OpenPaymentGameDialogAsync(game!);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        private async Task OpenPaymentGameDialogAsync(SrvGameDetail gamedetail)
+        {
+            try
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Inserisci dati",
+                    PrimaryButtonText = "Conferma",
+                    CloseButtonText = "Annulla",
+                    XamlRoot = XamlRoot,
+                    ContentTemplate = (DataTemplate)this.Resources["GameDialog"],
+                    Content = gamedetail,
+                    Style = (Style)this.Resources["WideContentDialogStyle"]
+                };
+
+                var result = await ShowDialogSafeAsync(dialog);
+
+                if (result == ContentDialogResult.Primary)
+                {
+                }
+            }
+            catch (System.Runtime.InteropServices.COMException comEx)
+            {
+                _logger.LogError(comEx, "Errore COM nel dialog: {Message}", comEx.Message);
+                // Potrebbe essere un dialog già aperto
+            }
+        }
+
+        private async void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             try
             {
@@ -197,11 +243,11 @@ namespace PPAsta.Pages
                 {
                     _logger.LogInformation($"LoadingRow per table {gameDetail.Id}");
 
-                    if (gameDetail.PaymentProcess == PaymentProcess.Paid)
+                    if (gameDetail.PaymentProcess == PaymentGameProcess.Paid)
                     {
                         e.Row.Background = new SolidColorBrush(Colors.Green);
                     }
-                    else if (gameDetail.PaymentProcess == PaymentProcess.ToBePaid)
+                    else if (gameDetail.PaymentProcess == PaymentGameProcess.ToBePaid)
                     {
                         e.Row.Background = new SolidColorBrush(Colors.Yellow);
                     }
@@ -218,6 +264,48 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore in LoadingRow");
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async Task ExceptionDialogAsync(Exception ex)
+        {
+            var errorText = ex.Message;
+
+            var dialog = new ContentDialog
+            {
+                Title = "Errore",
+                CloseButtonText = "Ok",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = errorText }
+                    }
+                }
+            };
+
+            await ShowDialogSafeAsync(dialog);
+        }
+
+        private async Task<ContentDialogResult> ShowDialogSafeAsync(ContentDialog dialog)
+        {
+            try
+            {
+                _currentDialog?.Hide();
+
+                // Aspetta un momento per permettere al dialog precedente di chiudersi
+                await Task.Delay(300);
+
+                _currentDialog = dialog;
+                return await _currentDialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore dialog");
+                return ContentDialogResult.None;
             }
         }
     }

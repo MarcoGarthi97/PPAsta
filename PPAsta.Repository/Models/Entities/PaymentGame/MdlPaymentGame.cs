@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PPAsta.Repository.Models.Entities.Payment
+namespace PPAsta.Repository.Models.Entities.PaymentGame
 {
     [Table("PAYMENTGAMES")]
     public class MdlPaymentGame : MdlFieldsDB
@@ -18,10 +18,10 @@ namespace PPAsta.Repository.Models.Entities.Payment
         public int GameId { get; set; }
         [Column("PaymentID")]
         public int PaymentId { get; set; }
-        [Column("Buyer")]
-        public string? Buyer { get; set; }
+        [Column("BuyerID")]
+        public int? BuyerId { get; set; }
         [Column("PaymentProcess")]
-        public PaymentProcess PaymentProcess { get; set; }
+        public PaymentGameProcess PaymentProcess { get; set; }
         [Column("SellingPrice")]
         public decimal SellingPrice { get; set; }
         [Column("PurchasePrice")]

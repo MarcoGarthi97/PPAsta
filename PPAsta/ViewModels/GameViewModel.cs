@@ -1,8 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Service.Models.PaymentGame;
 using PPAsta.Service.Models.PP.Game;
+using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Services.PP.Game;
+using PPAsta.Service.Services.PP.PaymentGame;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +18,7 @@ namespace PPAsta.ViewModels
     public class GameViewModel : ObservableObject, IForServiceCollectionExtension
     {
         private readonly ISrvGameService _gameService;
+        private readonly ISrvPaymentGameService _paymentGameService;
 
         private string _textResearch = "";
         private string? _totalRecordsText;
@@ -28,9 +32,10 @@ namespace PPAsta.ViewModels
 
         public ObservableCollection<SrvGameDetail> Games { get; } = new ObservableCollection<SrvGameDetail>();
 
-        public GameViewModel(ISrvGameService gameService)
+        public GameViewModel(ISrvGameService gameService, ISrvPaymentGameService paymentGameService)
         {
             _gameService = gameService;
+            _paymentGameService = paymentGameService;
 
             LoadGamesCommand = new AsyncRelayCommand(LoadGamesAsync);
         }
@@ -185,6 +190,11 @@ namespace PPAsta.ViewModels
             }
             
             RecordsPagination(gamesTemp); 
+        }
+
+        public async Task InsertCardPaymentGameAsync(SrvPaymentGame payment)
+        {
+            await _paymentGameService.InsertPaymentGameAsync(payment);
         }
     }
 }

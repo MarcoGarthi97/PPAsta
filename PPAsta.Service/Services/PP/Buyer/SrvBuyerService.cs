@@ -17,6 +17,7 @@ namespace PPAsta.Service.Services.PP.Buyer
         Task<List<SrvBuyer>> GetAllBuyersAsync();
         Task<IEnumerable<SrvBuyer>> GetBuyerAsync(int number, int year);
         List<SrvBuyer> GetContentByCSV(string content);
+        Task<int> GetNextNumberByYearAsync(int year);
         Task InsertBuyerAsync(SrvBuyer buyer);
         Task InsertBuyersAsync(IEnumerable<SrvBuyer> buyers);
         Task UpdateBuyerAsync(SrvBuyer buyer);
@@ -109,6 +110,11 @@ namespace PPAsta.Service.Services.PP.Buyer
             }
 
             return result;
+        }
+
+        public async Task<int> GetNextNumberByYearAsync(int year)
+        {
+            return await _buyerRepository.GetNextNumberByYearAsync(year);
         }
     }
 }

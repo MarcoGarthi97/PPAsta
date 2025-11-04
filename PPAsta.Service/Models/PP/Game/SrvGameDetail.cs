@@ -9,7 +9,7 @@ namespace PPAsta.Service.Models.PP.Game
         public string Owner { get; set; }
         public int Year { get; set; }
         public string Buyer { get; set; }
-        public PaymentProcess PaymentProcess { get; set; }
+        public PaymentGameProcess PaymentProcess { get; set; }
         public decimal SellingPrice { get; set; }
         public decimal? PurchasePrice { get; set; }
         public decimal? ShareOwner { get; set; }
