@@ -8,22 +8,19 @@ using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.Payment;
-using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace PPAsta.Service.Services.Google
+namespace PPAsta.Service.Services.PP.Spreadsheet
 {
     public interface ISrvSpreadsheetService : IForServiceCollectionExtension
     {
-        Task ImportFromGoogleSpreadsheetToDatabaseAsync();
+        Task ImportToDatabaseAsync(string data, bool isDelete);
     }
 
     public class SrvSpreadsheetService : ISrvSpreadsheetService
@@ -42,14 +39,25 @@ namespace PPAsta.Service.Services.Google
             _paymentService = paymentService;
         }
 
-        public async Task ImportFromGoogleSpreadsheetToDatabaseAsync()
+        public async Task ImportToDatabaseAsync(string data, bool isDelete)
         {
-            var rows = await GetGoogleSpreadsheetAsync();
+            var rows = GetSpreadsheetAsync(data);
 
-            await ImportToDatabaseAsync(rows);
+            if (isDelete)
+            {
+                var years = rows.Select(x => x.Anno).GroupBy(x => x).Select(x => x.Key);
+                await DeleteAsync(years);
+            }
+
+            await ImportAsync(rows);
         }
 
-        private async Task ImportToDatabaseAsync(IEnumerable<SrvSpreadsheet> rows)
+        private async Task DeleteAsync(IEnumerable<int> years)
+        {
+
+        }
+
+        private async Task ImportAsync(IEnumerable<SrvSpreadsheet> rows)
         {
             var games = _mapper.Map<IEnumerable<SrvGame>>(rows);
             await _gameService.InsertGamesAsync(games);
@@ -70,7 +78,7 @@ namespace PPAsta.Service.Services.Google
 
                 if (x.Prezzo.HasValue)
                 {
-                    price = x.Prezzo.Value / 100;    
+                    price = x.Prezzo.Value / 100;
                 }
 
                 if (dictRows.ContainsKey(x.NomeGioco + "-" + x.Proprietario))
@@ -118,23 +126,11 @@ namespace PPAsta.Service.Services.Google
             return payments;
         }
 
-        private async Task<IEnumerable<SrvSpreadsheet>> GetGoogleSpreadsheetAsync()
-        {
-            _logger.LogInformation(nameof(GetGoogleSpreadsheetAsync) + " start");
-
-            using var client = new HttpClient();
-            var csvData = await client.GetStringAsync(SrvAppConfigurationStorage.GoogleSpreadsheetConfiguration.Url);
-
-            _logger.LogInformation(nameof(GetGoogleSpreadsheetAsync) + " end");
-
-            return GetSpreadsheetAsync(csvData);
-        }
-
         private IEnumerable<SrvSpreadsheet> GetSpreadsheetAsync(string csvData)
         {
             _logger.LogInformation(nameof(GetSpreadsheetAsync) + " start");
 
-            csvData = DataCleansing(csvData);
+            csvData = DataCleaning(csvData);
 
             using var reader = new StringReader(csvData);
             using var csv = new CsvReader(reader, culture: CultureInfo.InvariantCulture);
@@ -146,7 +142,7 @@ namespace PPAsta.Service.Services.Google
             return list;
         }
 
-        private string DataCleansing(string csvData)
+        private string DataCleaning(string csvData)
         {
             csvData = csvData.Replace("€", "");
 
