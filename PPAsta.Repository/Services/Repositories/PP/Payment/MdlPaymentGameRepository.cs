@@ -1,4 +1,5 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Repository.Models.Entities.Payment;
 using PPAsta.Repository.Services.FactorySQL;
@@ -14,6 +15,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
     public interface IMdlPaymentRepository : IForServiceCollectionExtension
     {
         Task DeletePaymentAsync(MdlPaymentGame Payment);
+        Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<MdlPaymentGame>> GetAllPaymentsAsync();
         Task InsertPaymentAsync(MdlPaymentGame Payment);
         Task InsertPaymentsAsync(IEnumerable<MdlPaymentGame> Payments);
@@ -54,6 +56,15 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.DeleteAsync(Payment);
+        }
+
+        public async Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"DELETE FROM PAYMENTGAMES WHERE GameID in @gameIds;";
+
+            await connection.QueryAsync(sql, new { gameIds });
         }
     }
 }

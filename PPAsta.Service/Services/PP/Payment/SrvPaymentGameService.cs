@@ -14,6 +14,7 @@ namespace PPAsta.Service.Services.PP.Payment
     public interface ISrvPaymentService : IForServiceCollectionExtension
     {
         Task DeletePaymentAsync(SrvPaymentGame paymentGame);
+        Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<SrvPaymentGame>> GetAllPaymentsAsync();
         Task InsertPaymentAsync(SrvPaymentGame paymentGame);
         Task InsertPaymentsAsync(IEnumerable<SrvPaymentGame> paymentGame);
@@ -70,6 +71,11 @@ namespace PPAsta.Service.Services.PP.Payment
         {
             var paymentRepository = _mapper.Map<MdlPaymentGame>(paymentGame);
             await _paymentRepository.DeletePaymentAsync(paymentRepository);
+        }
+
+        public async Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            await _paymentRepository.DeletePaymentGamesByGameIdsAsync(gameIds);
         }
     }
 }

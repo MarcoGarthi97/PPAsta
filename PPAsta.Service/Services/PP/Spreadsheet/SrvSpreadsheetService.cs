@@ -54,7 +54,10 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
 
         private async Task DeleteAsync(IEnumerable<int> years)
         {
+            var games = await _gameService.GetGamesByYearsAsync(years);
 
+            await _gameService.DeleteGameByYearsAsync(years);
+            await _paymentService.DeletePaymentGamesByGameIdsAsync(games.Select(x => x.Id));
         }
 
         private async Task ImportAsync(IEnumerable<SrvSpreadsheet> rows)
