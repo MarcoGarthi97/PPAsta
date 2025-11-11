@@ -13,6 +13,7 @@ using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Storages.PP;
+using PPAsta.Services.Navigation;
 using PPAsta.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -37,13 +38,16 @@ namespace PPAsta.Pages
     {
         private readonly ILogger<GamesPage> _logger;
         private ContentDialog _currentDialog;
-        public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger)
+        private readonly INavigationService _navigationService;
+
+        public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger, INavigationService navigationService)
         {
             InitializeComponent();
             this.DataContext = gameViewModel;
             _logger = logger;
 
             LoadComponents();
+            _navigationService = navigationService;
         }
 
         private void LoadComponents()
@@ -91,7 +95,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
+                GameViewModel gameViewModel = (GameViewModel)DataContext;
                 await gameViewModel.LoadGamesAsync();
             }
             catch (Exception ex)
@@ -197,7 +201,7 @@ namespace PPAsta.Pages
                 if (button?.Tag != null)
                 {
                     var game = button.Tag as SrvGameDetail;
-                    await OpenPaymentGameDialogAsync(game!);
+                    _navigationService.NavigateTo<PaymentGamesPage>(game);
                 }
             }
             catch (Exception ex)
@@ -297,7 +301,7 @@ namespace PPAsta.Pages
                 _currentDialog?.Hide();
 
                 // Aspetta un momento per permettere al dialog precedente di chiudersi
-                await Task.Delay(300);
+                await Task.Delay(100);
 
                 _currentDialog = dialog;
                 return await _currentDialog.ShowAsync();

@@ -1,0 +1,149 @@
+<Page
+    x:Class="PPAsta.Pages.PaymentGamesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PPAsta.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d">
+
+    <Grid>
+        <!-- Riga superiore con freccia indietro e titolo -->
+        <Grid RowDefinitions="Auto,*" Padding="16,12,16,0">
+
+            <!-- Barra in alto -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                <!-- Bottone indietro -->
+                <Button Width="40" Height="40"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        ToolTipService.ToolTip="Torna indietro"
+                        Click="BackButton_Click">
+                    <FontIcon Glyph="&#xE72B;" FontSize="18"/>
+                    <!-- ← freccia sinistra -->
+                </Button>
+
+                <!-- Titolo pagina -->
+                <TextBlock Text="Dettagli Pagamento Gioco"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Contenuto principale -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="12" Padding="8,16,8,24">
+
+                    <!-- Prima riga: Nome, Proprietario, Prezzo di vendita -->
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Nome -->
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Nome" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBox Text="{Binding Name, Mode=OneWay}" 
+                                     IsReadOnly="True" 
+                                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                        </StackPanel>
+
+                        <!-- Proprietario -->
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Proprietario" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBox Text="{Binding Owner, Mode=OneWay}" 
+                                     IsReadOnly="True" 
+                                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                        </StackPanel>
+
+                        <!-- Prezzo di vendita -->
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Prezzo di vendita" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBox Text="{Binding SellingPrice, Mode=OneWay}" 
+                                     IsReadOnly="True" 
+                                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0"  Spacing="4">
+                            <TextBlock Text="Numero acquirente" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBox 
+         Text="{Binding Number, Mode=TwoWay}" 
+                                IsReadOnly="True" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Nome acquirente" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBox 
+         Text="{Binding BuyerName, Mode=TwoWay}" 
+                                IsReadOnly="True"/>
+                                </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="" FontWeight="SemiBold" FontSize="14"/>
+                            <Button Width="40" Height="40" VerticalAlignment="Stretch"
+                                Click="SearchBuyer_Click">
+                                <FontIcon Glyph="&#xE721;" FontSize="16"/>
+                                </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Prezzo d'acquisto -->
+                        <StackPanel Grid.Column="0"  Spacing="4">
+                            <TextBlock Text="Prezzo d'acquisto" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBox Text="{Binding PurchasePrice, Mode=TwoWay}" 
+                                       TextChanging="PurchasePrice_TextChanged"/>
+                        </StackPanel>
+
+                        <!-- Quota proprietario -->
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Quota proprietario" FontWeight="SemiBold" FontSize="14"/>
+                            <NumberBox Value="{Binding ShareOwner, Mode=TwoWay}" 
+               SpinButtonPlacementMode="Hidden"
+               SmallChange="0.01"
+               LargeChange="1"
+           IsEnabled="False"/>
+                        </StackPanel>
+
+                        <!-- Quota PP -->
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="Quota PP" FontWeight="SemiBold" FontSize="14"/>
+                            <NumberBox Value="{Binding SharePP, Mode=TwoWay}" 
+               SpinButtonPlacementMode="Hidden"
+               SmallChange="0.01"
+               LargeChange="1"
+           IsEnabled="False"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Pulsanti -->
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" Margin="0,16,0,0">
+                        <Button Content="Salva" Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}"/>
+                        <Button Content="Annulla" Command="{Binding CancelCommand}"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+
+    
+</Page>

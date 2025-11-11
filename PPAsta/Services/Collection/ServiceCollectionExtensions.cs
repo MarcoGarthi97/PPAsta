@@ -18,7 +18,8 @@ namespace PPAsta.Services.Collection
             .AddClasses(classes => classes.AssignableTo<IForServiceCollectionExtension>())
             .AsSelf()
             .AsImplementedInterfaces()
-            .WithTransientLifetime());
+            .WithSingletonLifetime());
+            //.WithTransientLifetime());
 
             return services;
         }

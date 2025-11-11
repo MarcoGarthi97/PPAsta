@@ -11,6 +11,7 @@ using PPAsta.Pages;
 using PPAsta.Service.Services.Google;
 using PPAsta.Service.Services.Windows;
 using PPAsta.Service.Storages.PP;
+using PPAsta.Services.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +33,7 @@ namespace PPAsta
     public sealed partial class MainWindow : Window, IForServiceCollectionExtension
     {
         private readonly IServiceProvider _serviceProvider;
+        private INavigationService _navigationService;
 
         private bool _isWindowLoaded = false;
 
@@ -40,6 +42,9 @@ namespace PPAsta
             InitializeComponent();
 
             _serviceProvider = serviceProvider;
+
+            _navigationService = _serviceProvider.GetRequiredService<INavigationService>();
+            _navigationService.Frame = ContentFrame;
 
             this.Activated += MainWindow_Activated;
         }
@@ -52,11 +57,7 @@ namespace PPAsta
                 this.Activated -= MainWindow_Activated; // Rimuovi l'event handler
                 this.Closed += MainWindow_Closed;
 
-                //var service = _serviceProvider.GetRequiredService<ISrvSpreadsheetService>();
-                //await service.ImportFromGoogleSpreadsheetToDatabaseAsync();
-
-                var gamesPage = _serviceProvider.GetRequiredService<GamesPage>();
-                ContentFrame.Content = gamesPage;
+                _navigationService.NavigateTo<GamesPage>();
             }
         }
 
@@ -68,8 +69,7 @@ namespace PPAsta
                 switch (tag)
                 {
                     case "gamesPage":
-                        var tablesPage = _serviceProvider.GetRequiredService<GamesPage>();
-                        ContentFrame.Content = tablesPage;
+                        _navigationService.NavigateTo<GamesPage>();
                         break;
                     //case "usersPage":
                     //    var usersPage = _serviceProvider.GetRequiredService<UsersPage>();
@@ -80,8 +80,7 @@ namespace PPAsta
                     //    ContentFrame.Content = eventsPage;
                     //    break;
                     case "buyersPage":
-                        var buyersPage = _serviceProvider.GetRequiredService<BuyersPage>();
-                        ContentFrame.Content = buyersPage;
+                        _navigationService.NavigateTo<BuyersPage>();
                         break;
                         //case "settingsPage":
                         //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
