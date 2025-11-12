@@ -16,6 +16,8 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
     public interface IMdlGameRepository : IForServiceCollectionExtension
     {
         Task DeleteGameAsync(MdlGame game);
+        Task DeleteGameByYearsAsync(IEnumerable<int> years);
+        Task<IEnumerable<MdlGame>> GetGamesByYearsAsync(IEnumerable<int> years);
         Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsAsync();
         Task<IEnumerable<MdlGame>> GetAllGamesAsync();
         Task InsertGameAsync(MdlGame game);
@@ -71,6 +73,24 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             ";
 
             return await connection.QueryAsync<MdlGameDetail>(sql);
+        }
+
+        public async Task DeleteGameByYearsAsync(IEnumerable<int> years)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = "DELETE FROM GAMES WHERE Year in @years;";
+
+            await connection.QueryAsync(sql, new { years });
+        }
+
+        public async Task<IEnumerable<MdlGame>> GetGamesByYearsAsync(IEnumerable<int> years)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = "SELECT * FROM GAMES WHERE Year in @years;";
+
+            return await connection.QueryAsync<MdlGame>(sql, new { years });
         }
     }
 }

@@ -34,7 +34,7 @@ namespace PPAsta.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class GamesPage : Page, IForServiceCollectionExtension
+    public sealed partial class GamesPage : Page, IForServiceCollectionExtension, INavigationAware
     {
         private readonly ILogger<GamesPage> _logger;
         private ContentDialog _currentDialog;
@@ -48,6 +48,20 @@ namespace PPAsta.Pages
 
             LoadComponents();
             _navigationService = navigationService;
+        }
+
+        public async void OnNavigatedTo(object parameter)
+        {
+            try
+            {
+                GameViewModel gameViewModel = (GameViewModel)DataContext;
+                await gameViewModel.ReloadGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
         }
 
         private void LoadComponents()
@@ -200,6 +214,9 @@ namespace PPAsta.Pages
                 
                 if (button?.Tag != null)
                 {
+                    var gameViewModel = (GameViewModel)DataContext;
+                    gameViewModel.ClearData();
+
                     var game = button.Tag as SrvGameDetail;
                     _navigationService.NavigateTo<PaymentGamesPage>(game);
                 }
@@ -207,39 +224,6 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                await ExceptionDialogAsync(ex);
-            }
-        }
-
-        private async void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
-        {
-            try
-            {
-                if (e.Row.DataContext is SrvGameDetail gameDetail)
-                {
-                    _logger.LogInformation($"LoadingRow per table {gameDetail.Id}");
-
-                    if (gameDetail.PaymentProcess == PaymentGameProcess.Paid)
-                    {
-                        //e.Row.Background = new SolidColorBrush(Colors.Green);
-                    }
-                    else if (gameDetail.PaymentProcess == PaymentGameProcess.ToBePaid)
-                    {
-                        //e.Row.Background = new SolidColorBrush(Colors.LightYellow);
-                    }
-                    else
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Transparent);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("DataContext non è di tipo SrvGameDetail");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Errore in LoadingRow");
                 await ExceptionDialogAsync(ex);
             }
         }

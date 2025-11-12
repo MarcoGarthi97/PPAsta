@@ -16,6 +16,7 @@ namespace PPAsta.Service.Services.PP.Payment
     public interface ISrvPaymentService : IForServiceCollectionExtension
     {
         Task DeletePaymentAsync(SrvPayment Payment);
+        Task DeletePaymentByIdsAsync(IEnumerable<int> ids);
         Task<IEnumerable<SrvPayment>> GetAllPaymentsAsync();
         Task InsertPaymentAsync(SrvPayment Payment);
         Task InsertPaymentsAsync(IEnumerable<SrvPayment> Payment);
@@ -77,9 +78,14 @@ namespace PPAsta.Service.Services.PP.Payment
             await _paymentRepository.DeletePaymentAsync(paymentRepository);
         }
 
+        public async Task DeletePaymentByIdsAsync(IEnumerable<int> ids)
+        {
+            await _paymentRepository.DeletePaymentByIdsAsync(ids);
+        }
+
         public async Task<int> UpsertPaymentAsync(SrvPaymentGame paymentGame)
         {
-            MdlPayment paymentRepository = await _paymentRepository.GetPaymentGameAsyncById(paymentGame.Id);
+            MdlPayment paymentRepository = await _paymentRepository.GetPaymentGameAsyncById(paymentGame.GameId);
 
             int id;
             if (paymentRepository != null && paymentRepository.BuyerId != paymentGame.BuyerId)
@@ -98,10 +104,10 @@ namespace PPAsta.Service.Services.PP.Payment
                     paymentRepository.RUD = DateTime.Now;
 
                     await _paymentRepository.UpdatePaymentAsync(paymentRepository);
-
-                    paymentRepository = await _paymentRepository.GetPaymentGameAsyncByBuyerId(paymentGame.BuyerId.Value);
                 }
             }
+
+            paymentRepository = await _paymentRepository.GetPaymentGameAsyncByBuyerId(paymentGame.BuyerId.Value);
 
             if (paymentRepository == null)
             {

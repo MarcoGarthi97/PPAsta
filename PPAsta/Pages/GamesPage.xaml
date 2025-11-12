@@ -43,8 +43,7 @@
             AutoGenerateColumns="False"
             IsReadOnly="True"
             Margin="0,10,0,0"
-            Sorting="DataGrid_Sorting"
-            LoadingRow="DataGrid_LoadingRow">
+            Sorting="DataGrid_Sorting">
             <controls:DataGrid.Columns>
                 <controls:DataGridTemplateColumn Header="Processo" Tag="PaymentProcess">
                     <controls:DataGridTemplateColumn.CellTemplate>

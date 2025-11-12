@@ -95,8 +95,8 @@ namespace PPAsta.ViewModels
             Owner = gameDetail.Owner;
             SellingPrice = (double)gameDetail.SellingPrice;
 
-            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameId(gameDetail.Id);
-            if (paymentGame.BuyerId != null)
+            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(gameDetail.Id);
+            if (paymentGame != null)
             {
                 PurchasePrice = paymentGame.PurchasePrice.ToString();
                 SharePP = (double)paymentGame.SharePP!;
@@ -141,7 +141,7 @@ namespace PPAsta.ViewModels
 
         public async Task InsertPaymentGameAsync()
         {
-            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameId(_gameId);
+            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(_gameId);
 
             paymentGame.PurchasePrice = Convert.ToDecimal(PurchasePrice);
             paymentGame.SharePP = (decimal)SharePP!;

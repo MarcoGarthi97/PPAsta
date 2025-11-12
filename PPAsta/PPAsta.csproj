@@ -17,6 +17,7 @@
     <None Remove="Pages\GamesPage.xaml" />
     <None Remove="Pages\PaymentGamesPage.xaml" />
     <None Remove="Control\BuyersControl.xaml" />
+    <None Remove="Pages\SettingsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\PaymentGamesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

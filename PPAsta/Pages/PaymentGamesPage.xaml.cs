@@ -69,7 +69,7 @@ namespace PPAsta.Pages
             try
             {
                 _paymentGameViewModel.ClearData();
-                _navigationService.NavigateTo<GamesPage>();
+                _navigationService.NavigateTo<GamesPage>("");
             }
             catch (Exception ex)
             {

@@ -16,9 +16,11 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
     public interface IMdlPaymentGameRepository : IForServiceCollectionExtension
     {
         Task DeletePaymentGameAsync(MdlPaymentGame Payment);
+        Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesAsync();
         Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesBybuyerIdAsync(int buyerId);
-        Task<MdlPaymentGame> GetPaymentGameAsyncByGameId(int gameId);
+        Task<MdlPaymentGame> GetPaymentGameAsyncByGameIdAsync(int gameId);
+        Task<IEnumerable<MdlPaymentGame>> GetPaymentGameAsyncByGameIdsAsync(IEnumerable<int> gameIds);
         Task InsertPaymentGameAsync(MdlPaymentGame Payment);
         Task InsertPaymentGamesAsync(IEnumerable<MdlPaymentGame> Payments);
         Task UpdatePaymentGameAsync(MdlPaymentGame Payment);
@@ -30,13 +32,22 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
         {
         }
 
-        public async Task<MdlPaymentGame> GetPaymentGameAsyncByGameId(int gameId)
+        public async Task<MdlPaymentGame> GetPaymentGameAsyncByGameIdAsync(int gameId)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             string sql = $@"SELECT * FROM PAYMENTGAMES WHERE GameID = @gameId";
 
             return await connection.QueryFirstOrDefaultAsync<MdlPaymentGame>(sql, new { gameId });
+        }
+
+        public async Task<IEnumerable<MdlPaymentGame>> GetPaymentGameAsyncByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT * FROM PAYMENTGAMES WHERE GameID in @gameIds";
+
+            return await connection.QueryAsync<MdlPaymentGame>(sql, new { gameIds });
         }
 
         public async Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesAsync()
@@ -76,6 +87,15 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.DeleteAsync(Payment);
+        }
+
+        public async Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"DELETE FROM PAYMENTGAMES WHERE GameID in @gameIds;";
+
+            await connection.QueryAsync(sql, new { gameIds });
         }
     }
 }

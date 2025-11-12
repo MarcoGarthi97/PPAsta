@@ -16,9 +16,11 @@ namespace PPAsta.Service.Services.PP.PaymentGame
     public interface ISrvPaymentGameService : IForServiceCollectionExtension
     {
         Task DeletePaymentGameAsync(SrvPaymentGame paymentGame);
+        Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesAsync();
         Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesByBuyerIdAsync(int buyerId);
-        Task<SrvPaymentGame> GetPaymentGameAsyncByGameId(int gameId);
+        Task<SrvPaymentGame> GetPaymentGameAsyncByGameIdAsync(int gameId);
+        Task<IEnumerable<SrvPaymentGame>> GetPaymentGameAsyncByGameIdsAsync(IEnumerable<int> gameIds);
         Task InsertPaymentGameAsync(SrvPaymentGame paymentGame);
         Task InsertPaymentGamesAsync(IEnumerable<SrvPaymentGame> paymentGame);
         Task UpdatePaymentGameAsync(SrvPaymentGame paymentGame);
@@ -82,10 +84,21 @@ namespace PPAsta.Service.Services.PP.PaymentGame
             await _paymentGameRepository.DeletePaymentGameAsync(paymentRepository);
         }
 
-        public async Task<SrvPaymentGame> GetPaymentGameAsyncByGameId(int gameId)
+        public async Task<SrvPaymentGame> GetPaymentGameAsyncByGameIdAsync(int gameId)
         {
-            MdlPaymentGame paymentGameDB = await _paymentGameRepository.GetPaymentGameAsyncByGameId(gameId);
+            MdlPaymentGame paymentGameDB = await _paymentGameRepository.GetPaymentGameAsyncByGameIdAsync(gameId);
             return _mapper.Map<SrvPaymentGame>(paymentGameDB);
+        }
+
+        public async Task<IEnumerable<SrvPaymentGame>> GetPaymentGameAsyncByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var paymentGamesDB = await _paymentGameRepository.GetPaymentGameAsyncByGameIdsAsync(gameIds);
+            return _mapper.Map<IEnumerable<SrvPaymentGame>>(paymentGamesDB);
+        }
+
+        public async Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            await _paymentGameRepository.DeletePaymentGamesByGameIdsAsync(gameIds);
         }
     }
 }

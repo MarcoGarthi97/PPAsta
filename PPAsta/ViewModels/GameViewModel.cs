@@ -64,6 +64,18 @@ namespace PPAsta.ViewModels
             RecordsPagination(gamesTemp);
         }
 
+        public async Task ReloadGamesAsync()
+        {
+            ClearData();
+
+            await LoadGamesAsync();
+        }
+
+        public void ClearData()
+        {
+            _gamesList = new List<SrvGameDetail>();
+        }
+
         private async Task<IEnumerable<SrvGameDetail>> GetGamesFilteredAsync()
         {
             IEnumerable<SrvGameDetail> gamesTemp = null;

@@ -69,7 +69,7 @@ namespace PPAsta
                 switch (tag)
                 {
                     case "gamesPage":
-                        _navigationService.NavigateTo<GamesPage>();
+                        _navigationService.NavigateTo<GamesPage>("");
                         break;
                     //case "usersPage":
                     //    var usersPage = _serviceProvider.GetRequiredService<UsersPage>();
@@ -80,12 +80,11 @@ namespace PPAsta
                     //    ContentFrame.Content = eventsPage;
                     //    break;
                     case "buyersPage":
-                        _navigationService.NavigateTo<BuyersPage>();
+                        _navigationService.NavigateTo<BuyersPage>("");
                         break;
-                        //case "settingsPage":
-                        //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
-                        //    ContentFrame.Content = settingsPage;
-                        //    break;
+                    case "settingsPage":
+                        _navigationService.NavigateTo<SettingsPage>("");
+                        break;
                 }
             }
         }
