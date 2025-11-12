@@ -116,7 +116,6 @@ namespace PPAsta
 
             // TODO: da fare un load configurations
             SrvAppConfigurationStorage.SetDatabaseExist();
-            SrvAppConfigurationStorage.SetGoogleSpreadsheetConfiguration();
         }
 
         private async Task InizializeDatabase()

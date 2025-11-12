@@ -83,10 +83,10 @@ namespace PPAsta
                         var buyersPage = _serviceProvider.GetRequiredService<BuyersPage>();
                         ContentFrame.Content = buyersPage;
                         break;
-                        //case "settingsPage":
-                        //    var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
-                        //    ContentFrame.Content = settingsPage;
-                        //    break;
+                    case "settingsPage":
+                        var settingsPage = _serviceProvider.GetRequiredService<SettingsPage>();
+                        ContentFrame.Content = settingsPage;
+                        break;
                 }
             }
         }
