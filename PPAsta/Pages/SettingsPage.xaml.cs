@@ -138,6 +138,8 @@ namespace PPAsta.Pages
                 bool isChecked = checkBox.IsChecked == true;
 
                 await _settingViewModel.OnlineInsertDataAsync(textBox.Text, isChecked);
+
+                await CompleteDialog();
             }
         }
 
@@ -159,6 +161,9 @@ namespace PPAsta.Pages
                 if (file != null)
                 {
                     string content = await FileIO.ReadTextAsync(file);
+                    await _settingViewModel.InsertDataAsync(content, false);
+
+                    await CompleteDialog();
                 }
             }
             catch (Exception ex)
@@ -168,6 +173,25 @@ namespace PPAsta.Pages
             }
         }
 
+        private async Task CompleteDialog()
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Caricamento",
+                CloseButtonText = "Ok",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = "Dati caricati correttamente." }
+                    }
+                }
+            };
+
+            await ShowDialogSafeAsync(dialog);
+        }
 
         private async Task ExceptionDialogAsync(Exception ex)
         {

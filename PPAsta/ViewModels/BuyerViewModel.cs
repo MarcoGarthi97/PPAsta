@@ -247,5 +247,10 @@ namespace PPAsta.ViewModels
             _buyersList.Remove(buyer);
             await LoadBuyersAsync();
         }
+
+        public async Task<int> GetNextNumberByYearAsync(int year)
+        {
+            return await _buyerService.GetNextNumberByYearAsync(year);
+        }
     }
 }

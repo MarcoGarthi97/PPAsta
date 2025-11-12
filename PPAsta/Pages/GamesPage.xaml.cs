@@ -10,16 +10,20 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Storages.PP;
+using PPAsta.Services.Navigation;
 using PPAsta.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.System;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -30,16 +34,34 @@ namespace PPAsta.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class GamesPage : Page, IForServiceCollectionExtension
+    public sealed partial class GamesPage : Page, IForServiceCollectionExtension, INavigationAware
     {
         private readonly ILogger<GamesPage> _logger;
-        public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger)
+        private ContentDialog _currentDialog;
+        private readonly INavigationService _navigationService;
+
+        public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger, INavigationService navigationService)
         {
             InitializeComponent();
             this.DataContext = gameViewModel;
             _logger = logger;
 
             LoadComponents();
+            _navigationService = navigationService;
+        }
+
+        public async void OnNavigatedTo(object parameter)
+        {
+            try
+            {
+                GameViewModel gameViewModel = (GameViewModel)DataContext;
+                await gameViewModel.ReloadGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
         }
 
         private void LoadComponents()
@@ -79,6 +101,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore durante la visualizzazione dell'alert");
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -86,12 +109,13 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
+                GameViewModel gameViewModel = (GameViewModel)DataContext;
                 await gameViewModel.LoadGamesAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -105,6 +129,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -118,6 +143,7 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -149,10 +175,11 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void OnTextChanged(object sender, TextChangedEventArgs e)
+        private async void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -161,10 +188,11 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void GamesCount()
+        private async void GamesCount()
         {
             try
             {
@@ -174,50 +202,70 @@ namespace PPAsta.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private async void RowButton_Click(object sender, RoutedEventArgs e)
+        private async void PaymentButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // TODO: Da fare
+                var button = sender as Button;
+                
+                if (button?.Tag != null)
+                {
+                    var gameViewModel = (GameViewModel)DataContext;
+                    gameViewModel.ClearData();
+
+                    var game = button.Tag as SrvGameDetail;
+                    _navigationService.NavigateTo<PaymentGamesPage>(game);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
-        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        private async Task ExceptionDialogAsync(Exception ex)
+        {
+            var errorText = ex.Message;
+
+            var dialog = new ContentDialog
+            {
+                Title = "Errore",
+                CloseButtonText = "Ok",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = errorText }
+                    }
+                }
+            };
+
+            await ShowDialogSafeAsync(dialog);
+        }
+
+        private async Task<ContentDialogResult> ShowDialogSafeAsync(ContentDialog dialog)
         {
             try
             {
-                if (e.Row.DataContext is SrvGameDetail gameDetail)
-                {
-                    _logger.LogInformation($"LoadingRow per table {gameDetail.Id}");
+                _currentDialog?.Hide();
 
-                    if (gameDetail.PaymentProcess == PaymentProcess.Paid)
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Green);
-                    }
-                    else if (gameDetail.PaymentProcess == PaymentProcess.ToBePaid)
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Yellow);
-                    }
-                    else
-                    {
-                        e.Row.Background = new SolidColorBrush(Colors.Transparent);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("DataContext non è di tipo SrvGameDetail");
-                }
+                // Aspetta un momento per permettere al dialog precedente di chiudersi
+                await Task.Delay(100);
+
+                _currentDialog = dialog;
+                return await _currentDialog.ShowAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Errore in LoadingRow");
+                _logger.LogError(ex, "Errore dialog");
+                return ContentDialogResult.None;
             }
         }
     }

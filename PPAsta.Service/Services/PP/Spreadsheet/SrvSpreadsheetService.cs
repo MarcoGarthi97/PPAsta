@@ -5,9 +5,10 @@ using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.Google;
 using PPAsta.Service.Models.PP.Game;
-using PPAsta.Service.Models.PP.Payment;
+using PPAsta.Service.Models.PP.PaymentGame;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.Payment;
+using PPAsta.Service.Services.PP.PaymentGame;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,14 +30,16 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
         private readonly IMapper _mapper;
 
         private readonly ISrvGameService _gameService;
+        private readonly ISrvPaymentGameService _paymentGameService;
         private readonly ISrvPaymentService _paymentService;
 
-        public SrvSpreadsheetService(ILogger<SrvSpreadsheetService> logger, IMapper mapper, ISrvGameService gameService, ISrvPaymentService paymentService)
+        public SrvSpreadsheetService(ILogger<SrvSpreadsheetService> logger, IMapper mapper, ISrvGameService gameService, ISrvPaymentGameService paymentGameService, ISrvPaymentService srvPaymentService)
         {
             _logger = logger;
             _mapper = mapper;
             _gameService = gameService;
-            _paymentService = paymentService;
+            _paymentGameService = paymentGameService;
+            _paymentService = srvPaymentService;
         }
 
         public async Task ImportToDatabaseAsync(string data, bool isDelete)
@@ -55,9 +58,11 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
         private async Task DeleteAsync(IEnumerable<int> years)
         {
             var games = await _gameService.GetGamesByYearsAsync(years);
-
+            var paymentGames = await _paymentGameService.GetPaymentGameAsyncByGameIdsAsync(games.Select(x => x.Id));
+            
             await _gameService.DeleteGameByYearsAsync(years);
-            await _paymentService.DeletePaymentGamesByGameIdsAsync(games.Select(x => x.Id));
+            await _paymentGameService.DeletePaymentGamesByGameIdsAsync(games.Select(x => x.Id));
+            await _paymentService.DeletePaymentByIdsAsync(paymentGames.Select(x => x.PaymentId));
         }
 
         private async Task ImportAsync(IEnumerable<SrvSpreadsheet> rows)
@@ -68,7 +73,7 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
             games = await _gameService.GetAllGamesAsync();
 
             var payments = BuildPayments(games, rows);
-            await _paymentService.InsertPaymentsAsync(payments);
+            await _paymentGameService.InsertPaymentGamesAsync(payments);
         }
 
         private IEnumerable<SrvPaymentGame> BuildPayments(IEnumerable<SrvGame> games, IEnumerable<SrvSpreadsheet> rows)
@@ -118,7 +123,7 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
                     {
                         GameId = dictGames[x.Name + "-" + x.Owner].First(),
                         SellingPrice = dictRows[x.Name + "-" + x.Owner].First(),
-                        PaymentProcess = PaymentProcess.Insert
+                        PaymentProcess = PaymentGameProcess.Insert
                     });
 
                     dictGames[x.Name + "-" + x.Owner].RemoveAt(0);

@@ -43,7 +43,7 @@ namespace PPAsta.ViewModels
             await InsertDataAsync(csvData, isDelete);
         }
 
-        private async Task InsertDataAsync(string data, bool isDelete)
+        public async Task InsertDataAsync(string data, bool isDelete)
         {
             await _spreadsheetService.ImportToDatabaseAsync(data, isDelete);
         }

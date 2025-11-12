@@ -317,8 +317,11 @@ namespace PPAsta.Pages
             }
             else
             {
-                var year = DateTime.Now.Year;
+                int year = DateTime.Now.Year;
+                int number = await _buyerViewModel.GetNextNumberByYearAsync(year);
+
                 yearBox.Text = year.ToString();
+                numberBox.Text = number.ToString();
             }
 
             var dialog = new ContentDialog

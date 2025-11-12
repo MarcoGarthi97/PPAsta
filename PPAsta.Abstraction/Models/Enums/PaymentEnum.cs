@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace PPAsta.Abstraction.Models.Enums
 {
-    public enum PaymentProcess
+    public enum PaymentGameProcess
     {
         Insert = 0,
         ToBePaid = 1,
+        Paid = 2
+    }
+
+    public enum PaymentProcess
+    {
+        ToBePaid = 0,
+        NotFullyPaid = 1,
         Paid = 2
     }
 }

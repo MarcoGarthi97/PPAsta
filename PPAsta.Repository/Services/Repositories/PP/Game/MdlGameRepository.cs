@@ -66,8 +66,10 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             string sql = @$"
-                SELECT * FROM GAMES S
+                SELECT S.*, P.*, B.Name AS Buyer  
+                FROM GAMES S
                 JOIN PAYMENTGAMES P ON S.ID = P.GameID 
+                LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
             ";
 
             return await connection.QueryAsync<MdlGameDetail>(sql);
