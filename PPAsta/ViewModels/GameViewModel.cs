@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PPAsta.Abstraction.Models.Interfaces;
-using PPAsta.Service.Models.PaymentGame;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Models.PP.Payment;
+using PPAsta.Service.Models.PP.PaymentGame;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.PaymentGame;
 using System;

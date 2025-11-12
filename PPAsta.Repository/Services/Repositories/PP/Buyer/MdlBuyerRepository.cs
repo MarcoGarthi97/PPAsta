@@ -18,6 +18,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
         Task DeleteBuyerAsync(MdlBuyer buyer);
         Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync();
         Task<IEnumerable<MdlBuyer>> GetBuyerAsync(int number, int year);
+        Task<MdlBuyer> GetBuyerByIdAsync(int id);
         Task<int> GetNextNumberByYearAsync(int year);
         Task InsertBuyerAsync(MdlBuyer buyer);
         Task InsertBuyersAsync(IEnumerable<MdlBuyer> buyers);
@@ -38,6 +39,16 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
                 WHERE Number = @number AND Year = @year";
 
             return await connection.QueryAsync<MdlBuyer>(sql, new { number, year });
+        }
+
+        public async Task<MdlBuyer> GetBuyerByIdAsync(int id)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT * FROM BUYERS
+                WHERE Id = @id";
+
+            return await connection.QueryFirstOrDefaultAsync<MdlBuyer>(sql, new { id });
         }
 
         public async Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync()
@@ -79,7 +90,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
                             ORDER BY Number DESC
                             LIMIT 1;";
 
-            return await connection.QueryFirstAsync<int>(sql, new { year });
+            return await connection.QueryFirstOrDefaultAsync<int>(sql, new { year });
         }
     }
 }

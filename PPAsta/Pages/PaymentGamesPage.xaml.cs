@@ -54,7 +54,7 @@ namespace PPAsta.Pages
             {
                 if (parameter is SrvGameDetail dto)
                 {
-                    _paymentGameViewModel.LoadData(dto);
+                    _paymentGameViewModel.LoadDataAsync(dto);
                 }
             }
             catch (Exception ex)
@@ -68,6 +68,7 @@ namespace PPAsta.Pages
         {
             try
             {
+                _paymentGameViewModel.ClearData();
                 _navigationService.NavigateTo<GamesPage>();
             }
             catch (Exception ex)
@@ -77,13 +78,25 @@ namespace PPAsta.Pages
             }
         }
 
-        private async void PurchasePrice_TextChanged(object sender, TextBoxTextChangingEventArgs e)
+        private async void PurchasePrice_TextChanged(TextBox sender, TextBoxTextChangingEventArgs e)
         {
             try
             {
-                if (sender is TextBox textBox)
+                var filtered = new string(sender.Text.Where(char.IsDigit).ToArray());
+                if (sender.Text != filtered)
                 {
-                    _paymentGameViewModel.CheckTextBoxForDigits(textBox.Text);
+                    var pos = sender.SelectionStart - (sender.Text.Length - filtered.Length);
+                    sender.Text = filtered;
+                    sender.SelectionStart = Math.Max(pos, 0);
+                }
+
+                if (Int32.TryParse(filtered, out int n))
+                {
+                    _paymentGameViewModel.CalculateShares(n);
+                }
+                else
+                {
+                    _paymentGameViewModel.CalculateShares(0);
                 }
             }
             catch (Exception ex)
@@ -109,6 +122,48 @@ namespace PPAsta.Pages
                 _logger.LogError(ex, ex.Message);
                 await ExceptionDialogAsync(ex);
             }
+        }
+
+        private async void Save_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_paymentGameViewModel.CheckField())
+                {
+                    await _paymentGameViewModel.InsertPaymentGameAsync();
+
+                    await SaveDialog();
+                }
+                else
+                {
+                    throw new Exception("Non tutti i campi sono valorizzati");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async Task SaveDialog()
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Salvataggio",
+                CloseButtonText = "Ok",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = "Salvato correttamente." }
+                    }
+                }
+            };
+
+            await ShowDialogSafeAsync(dialog);
         }
 
         private async Task ExceptionDialogAsync(Exception ex)

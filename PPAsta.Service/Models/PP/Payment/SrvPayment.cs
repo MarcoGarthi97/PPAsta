@@ -1,8 +1,9 @@
-﻿using PPAsta.Abstraction.Models.Enums;
+﻿using PPAsta.Abstraction.Models.Entities;
+using PPAsta.Abstraction.Models.Enums;
 
 namespace PPAsta.Service.Models.PP.Payment
 {
-    public class SrvPayment
+    public class SrvPayment : SrvFields
     {
         public int Id { get; set; }
         public int BuyerId { get; set; }

@@ -9,7 +9,12 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls" 
     xmlns:numberformatting="using:Windows.Globalization.NumberFormatting"
     mc:Ignorable="d"
+    xmlns:converters="using:PPAsta.Converters"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <converters:PaymentProcessToBrushConverter x:Key="PaymentProcessToBrushConverter"/>
+    </Page.Resources>
 
     <Grid Padding="20">
         <Grid.RowDefinitions>
@@ -41,7 +46,18 @@
             Sorting="DataGrid_Sorting"
             LoadingRow="DataGrid_LoadingRow">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Processo" Tag="PaymentProcess" Binding="{Binding PaymentProcess}" />
+                <controls:DataGridTemplateColumn Header="Processo" Tag="PaymentProcess">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Ellipse Width="16" Height="16"
+                     Fill="{Binding PaymentProcess, Converter={StaticResource PaymentProcessToBrushConverter}}"
+                     Stroke="Black"
+                     StrokeThickness="0.5"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
                 <controls:DataGridTextColumn Header="Nome" Tag="Name" Binding="{Binding Name}" />
                 <controls:DataGridTextColumn Header="Proprietario" Tag="Owner" Binding="{Binding Owner}" />
                 <controls:DataGridTextColumn Header="Prezzo di vendita" Tag="SellingPrice" Binding="{Binding SellingPrice}" />

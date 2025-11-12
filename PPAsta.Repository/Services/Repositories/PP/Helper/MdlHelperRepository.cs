@@ -39,7 +39,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Helper
             string sql = "SELECT * FROM HELPERS WHERE Key = @key";
 
             var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstAsync<MdlHelper>(sql, new
+            return await connection.QueryFirstOrDefaultAsync<MdlHelper>(sql, new
             {
                 key
             });

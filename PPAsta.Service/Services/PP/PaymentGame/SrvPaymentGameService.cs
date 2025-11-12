@@ -3,7 +3,7 @@ using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Repository.Models.Entities.PaymentGame;
 using PPAsta.Repository.Services.Repositories.PP.PaymentGame;
-using PPAsta.Service.Models.PaymentGame;
+using PPAsta.Service.Models.PP.PaymentGame;
 using PPAsta.Service.Services.PP.Payment;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,8 @@ namespace PPAsta.Service.Services.PP.PaymentGame
     {
         Task DeletePaymentGameAsync(SrvPaymentGame paymentGame);
         Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesAsync();
-        Task InsertCardPaymentGameAsync(SrvPaymentGame paymentGame);
+        Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesByBuyerIdAsync(int buyerId);
+        Task<SrvPaymentGame> GetPaymentGameAsyncByGameId(int gameId);
         Task InsertPaymentGameAsync(SrvPaymentGame paymentGame);
         Task InsertPaymentGamesAsync(IEnumerable<SrvPaymentGame> paymentGame);
         Task UpdatePaymentGameAsync(SrvPaymentGame paymentGame);
@@ -27,18 +28,22 @@ namespace PPAsta.Service.Services.PP.PaymentGame
     {
         private readonly IMapper _mapper;
         private readonly IMdlPaymentGameRepository _paymentGameRepository;
-        private readonly ISrvPaymentService _paymentService;
 
-        public SrvPaymentGameService(IMdlPaymentGameRepository paymentRepository, IMapper mapper, ISrvPaymentService paymentService)
+        public SrvPaymentGameService(IMdlPaymentGameRepository paymentRepository, IMapper mapper)
         {
             _paymentGameRepository = paymentRepository;
             _mapper = mapper;
-            _paymentService = paymentService;
         }
 
         public async Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesAsync()
         {
             var paymentsRepository = await _paymentGameRepository.GetAllPaymentGamesAsync();
+            return _mapper.Map<IEnumerable<SrvPaymentGame>>(paymentsRepository);
+        }
+
+        public async Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesByBuyerIdAsync(int buyerId)
+        {
+            var paymentsRepository = await _paymentGameRepository.GetAllPaymentGamesBybuyerIdAsync(buyerId);
             return _mapper.Map<IEnumerable<SrvPaymentGame>>(paymentsRepository);
         }
 
@@ -77,21 +82,10 @@ namespace PPAsta.Service.Services.PP.PaymentGame
             await _paymentGameRepository.DeletePaymentGameAsync(paymentRepository);
         }
 
-        public async Task InsertCardPaymentGameAsync(SrvPaymentGame paymentGame)
+        public async Task<SrvPaymentGame> GetPaymentGameAsyncByGameId(int gameId)
         {
-            MdlPaymentGame paymentGameDB = await _paymentGameRepository.GetPaymentGameAsyncByGameId(paymentGame.GameId);
-            paymentGameDB.BuyerId = paymentGame.BuyerId;
-            paymentGameDB.PaymentProcess = PaymentGameProcess.ToBePaid;
-            paymentGameDB.SellingPrice = paymentGame.SellingPrice;
-            paymentGameDB.PurchasePrice = paymentGame.PurchasePrice;
-            paymentGameDB.ShareOwner = paymentGame.ShareOwner;
-            paymentGameDB.SharePP = paymentGame.SharePP;
-            paymentGameDB.RUD = DateTime.Now;
-
-            int paymentId = await _paymentService.UpsertPaymentAsync(paymentGame);
-            paymentGameDB.PaymentId = paymentId;
-
-            await _paymentGameRepository.UpdatePaymentGameAsync(paymentGameDB);
+            MdlPaymentGame paymentGameDB = await _paymentGameRepository.GetPaymentGameAsyncByGameId(gameId);
+            return _mapper.Map<SrvPaymentGame>(paymentGameDB);
         }
     }
 }

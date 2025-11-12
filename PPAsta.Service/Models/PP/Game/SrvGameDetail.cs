@@ -1,8 +1,9 @@
-﻿using PPAsta.Abstraction.Models.Enums;
+﻿using PPAsta.Abstraction.Models.Entities;
+using PPAsta.Abstraction.Models.Enums;
 
 namespace PPAsta.Service.Models.PP.Game
 {
-    public class SrvGameDetail
+    public class SrvGameDetail : SrvFields
     {
         public int Id { get; set; }
         public string Name { get; set; }

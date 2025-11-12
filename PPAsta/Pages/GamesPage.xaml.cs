@@ -211,34 +211,6 @@ namespace PPAsta.Pages
             }
         }
 
-        private async Task OpenPaymentGameDialogAsync(SrvGameDetail gamedetail)
-        {
-            try
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = "Inserisci dati",
-                    PrimaryButtonText = "Conferma",
-                    CloseButtonText = "Annulla",
-                    XamlRoot = XamlRoot,
-                    ContentTemplate = (DataTemplate)this.Resources["GameDialog"],
-                    Content = gamedetail,
-                    Style = (Style)this.Resources["WideContentDialogStyle"]
-                };
-
-                var result = await ShowDialogSafeAsync(dialog);
-
-                if (result == ContentDialogResult.Primary)
-                {
-                }
-            }
-            catch (System.Runtime.InteropServices.COMException comEx)
-            {
-                _logger.LogError(comEx, "Errore COM nel dialog: {Message}", comEx.Message);
-                // Potrebbe essere un dialog già aperto
-            }
-        }
-
         private async void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             try
@@ -249,11 +221,11 @@ namespace PPAsta.Pages
 
                     if (gameDetail.PaymentProcess == PaymentGameProcess.Paid)
                     {
-                        e.Row.Background = new SolidColorBrush(Colors.Green);
+                        //e.Row.Background = new SolidColorBrush(Colors.Green);
                     }
                     else if (gameDetail.PaymentProcess == PaymentGameProcess.ToBePaid)
                     {
-                        e.Row.Background = new SolidColorBrush(Colors.Yellow);
+                        //e.Row.Background = new SolidColorBrush(Colors.LightYellow);
                     }
                     else
                     {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Gaming.Input;
 using Z.Dapper.Plus;
 
 namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
@@ -16,6 +17,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
     {
         Task DeletePaymentGameAsync(MdlPaymentGame Payment);
         Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesAsync();
+        Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesBybuyerIdAsync(int buyerId);
         Task<MdlPaymentGame> GetPaymentGameAsyncByGameId(int gameId);
         Task InsertPaymentGameAsync(MdlPaymentGame Payment);
         Task InsertPaymentGamesAsync(IEnumerable<MdlPaymentGame> Payments);
@@ -34,13 +36,22 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
 
             string sql = $@"SELECT * FROM PAYMENTGAMES WHERE GameID = @gameId";
 
-            return await connection.QueryFirstAsync<MdlPaymentGame>(sql, new { gameId });
+            return await connection.QueryFirstOrDefaultAsync<MdlPaymentGame>(sql, new { gameId });
         }
 
         public async Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesAsync()
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             return await connection.GetAllAsync<MdlPaymentGame>();
+        }
+
+        public async Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesBybuyerIdAsync(int buyerId)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT * FROM PAYMENTGAMES WHERE BuyerID = @buyerId";
+
+            return await connection.QueryAsync<MdlPaymentGame>(sql, new { buyerId });
         }
 
         public async Task InsertPaymentGameAsync(MdlPaymentGame Payment)

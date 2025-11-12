@@ -18,6 +18,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
         Task DeletePaymentAsync(MdlPayment Payment);
         Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync();
         Task<MdlPayment> GetPaymentGameAsyncByBuyerId(int buyerId);
+        Task<MdlPayment> GetPaymentGameAsyncById(int id);
         Task InsertPaymentAsync(MdlPayment Payment);
         Task InsertPaymentsAsync(IEnumerable<MdlPayment> Payments);
         Task UpdatePaymentAsync(MdlPayment Payment);
@@ -33,9 +34,18 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
-            string sql = $@"SELECT * FROM PAYMENTS WHERE GameID = @buyerId";
+            string sql = $@"SELECT * FROM PAYMENTS WHERE BuyerID = @buyerId";
 
-            return await connection.QueryFirstAsync<MdlPayment>(sql, new { buyerId });
+            return await connection.QueryFirstOrDefaultAsync<MdlPayment>(sql, new { buyerId });
+        }
+
+        public async Task<MdlPayment> GetPaymentGameAsyncById(int id)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT * FROM PAYMENTS WHERE ID = @id";
+
+            return await connection.QueryFirstOrDefaultAsync<MdlPayment>(sql, new { id });
         }
 
         public async Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync()

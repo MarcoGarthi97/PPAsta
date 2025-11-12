@@ -135,8 +135,7 @@
 
                     <!-- Pulsanti -->
                     <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" Margin="0,16,0,0">
-                        <Button Content="Salva" Command="{Binding SaveCommand}" Style="{StaticResource AccentButtonStyle}"/>
-                        <Button Content="Annulla" Command="{Binding CancelCommand}"/>
+                        <Button Content="Salva" Click="Save_Click" Style="{StaticResource AccentButtonStyle}"/>
                     </StackPanel>
 
                 </StackPanel>

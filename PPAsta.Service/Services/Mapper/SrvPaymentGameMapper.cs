@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using PPAsta.Repository.Models.Entities.Payment;
 using PPAsta.Repository.Models.Entities.PaymentGame;
-using PPAsta.Service.Models.PaymentGame;
 using PPAsta.Service.Models.PP.Payment;
+using PPAsta.Service.Models.PP.PaymentGame;
 
 namespace PPAsta.Service.Services.Mapper
 {
