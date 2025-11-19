@@ -17,6 +17,7 @@ namespace PPAsta.Service.Services.PP.Payment
     {
         Task DeletePaymentAsync(SrvPayment Payment);
         Task DeletePaymentByIdsAsync(IEnumerable<int> ids);
+        Task<IEnumerable<SrvPaymentDetail>> GetAllPaymentDetailsAsync();
         Task<IEnumerable<SrvPayment>> GetAllPaymentsAsync();
         Task InsertPaymentAsync(SrvPayment Payment);
         Task InsertPaymentsAsync(IEnumerable<SrvPayment> Payment);
@@ -41,6 +42,12 @@ namespace PPAsta.Service.Services.PP.Payment
         {
             var paymentsRepository = await _paymentRepository.GetAllPaymentsAsync();
             return _mapper.Map<IEnumerable<SrvPayment>>(paymentsRepository);
+        }
+
+        public async Task<IEnumerable<SrvPaymentDetail>> GetAllPaymentDetailsAsync()
+        {
+            var paymentsRepository = await _paymentRepository.GetAllPaymentDetailsAsync();
+            return _mapper.Map<IEnumerable<SrvPaymentDetail>>(paymentsRepository);
         }
 
         public async Task InsertPaymentAsync(SrvPayment Payment)
@@ -85,7 +92,7 @@ namespace PPAsta.Service.Services.PP.Payment
 
         public async Task<int> UpsertPaymentAsync(SrvPaymentGame paymentGame)
         {
-            MdlPayment paymentRepository = await _paymentRepository.GetPaymentGameAsyncById(paymentGame.GameId);
+            MdlPayment paymentRepository = await _paymentRepository.GetPaymentByIdAsync(paymentGame.GameId);
 
             int id;
             if (paymentRepository != null && paymentRepository.BuyerId != paymentGame.BuyerId)

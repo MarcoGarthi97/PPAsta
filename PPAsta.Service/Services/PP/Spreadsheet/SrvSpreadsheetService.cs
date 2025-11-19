@@ -127,7 +127,7 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
                     });
 
                     dictGames[x.Name + "-" + x.Owner].RemoveAt(0);
-                    dictRows[x.Name + "-" + x.Owner].RemoveAt(0);
+                    //dictRows[x.Name + "-" + x.Owner].RemoveAt(0);
                 }
             }
 
