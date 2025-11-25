@@ -4,6 +4,7 @@ using PPAsta.Repository.Models.Entities.Game;
 using PPAsta.Repository.Services.FactorySQL;
 using PPAsta.Repository.Services.Repositories.PP.Game;
 using PPAsta.Service.Models.PP.Game;
+using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace PPAsta.Service.Services.PP.Game
         Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
         Task<IEnumerable<SrvGame>> GetAllGamesAsync();
         Task<IEnumerable<SrvGame>> GetGamesByYearsAsync(IEnumerable<int> years);
+        Task<int?> GetOldestYearAsync();
         Task InsertGameAsync(SrvGame game);
         Task InsertGamesAsync(IEnumerable<SrvGame> games);
         Task UpdateGameAsync(SrvGame game);
@@ -65,6 +67,12 @@ namespace PPAsta.Service.Services.PP.Game
 
         public async Task InsertGamesAsync(IEnumerable<SrvGame> games)
         {
+            var oldestGames = games.Where(x => x.Year < SrvAppConfigurationStorage.OldestYear).OrderByDescending(x => x.Year);
+            if (oldestGames.Any())
+            {
+                SrvAppConfigurationStorage.SetOldestYear(oldestGames.FirstOrDefault().Year);
+            }
+
             var gamesRepository = _mapper.Map<IEnumerable<MdlGame>>(games);
             foreach (var gameRepository in gamesRepository)
             {
@@ -99,6 +107,18 @@ namespace PPAsta.Service.Services.PP.Game
         public async Task DeleteGameByYearsAsync(IEnumerable<int> years)
         {
             await _gameRepository.DeleteGameByYearsAsync(years);
+        }
+
+        public async Task<int?> GetOldestYearAsync()
+        {
+            try
+            {
+                return await _gameRepository.GetOldestYearAsync();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

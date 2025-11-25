@@ -31,6 +31,9 @@ using PPAsta.Service.Services.PP.Version;
 using PPAsta.Service.Services.Windows;
 using PPAsta.Migration.Services.Collection;
 using PPAsta.Migration.Services.Orchestrator;
+using PPAsta.Service.Services.PP.Buyer;
+using PPAsta.Service.Services.PP.Game;
+using PPAsta.Service.Services.PP.Helper;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -114,8 +117,19 @@ namespace PPAsta
             var migrationService = services.GetRequiredService<IMigrationOrchestrator>();
             await migrationService.ExecuteMigrationAsync();
 
-            // TODO: da fare un load configurations
+            await LoadConfigurationsAsync(services);
+        }
+
+        private async Task LoadConfigurationsAsync(IServiceProvider services)
+        {
             SrvAppConfigurationStorage.SetDatabaseExist();
+
+            var gameService = services.GetRequiredService<ISrvGameService>();
+            SrvAppConfigurationStorage.SetOldestYear(await gameService.GetOldestYearAsync());
+
+            var helperService = services.GetRequiredService<ISrvHelperService>();
+            var helperInitializeYear = await helperService.GetHelperByKeyAsync("InitializeYear");
+            SrvAppConfigurationStorage.SetInitializeYearNow(helperInitializeYear?.Json);
         }
 
         private async Task InizializeDatabase()

@@ -16,7 +16,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
     public interface IMdlBuyerRepository : IForServiceCollectionExtension
     {
         Task DeleteBuyerAsync(MdlBuyer buyer);
-        Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync();
+        Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync(int? year = null);
         Task<IEnumerable<MdlBuyer>> GetBuyerAsync(int number, int year);
         Task<MdlBuyer> GetBuyerByIdAsync(int id);
         Task<int> GetNextNumberByYearAsync(int year);
@@ -51,10 +51,18 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
             return await connection.QueryFirstOrDefaultAsync<MdlBuyer>(sql, new { id });
         }
 
-        public async Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync()
+        public async Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync(int? year = null)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
-            return await connection.GetAllAsync<MdlBuyer>();
+
+            string sql = $@"SELECT * FROM BUYERS";
+
+            if (year.HasValue)
+            {
+                sql += " WHERE YEAR = @year";
+            }
+
+            return await connection.QueryAsync<MdlBuyer>(sql, new { year });
         }
 
         public async Task InsertBuyerAsync(MdlBuyer buyer)

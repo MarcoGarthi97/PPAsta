@@ -55,6 +55,7 @@ namespace PPAsta.Pages
         {
             if (SrvAppConfigurationStorage.DatabaseConfiguration.DatabaseExists)
             {
+                _buyerViewModel.LoadComboBoxYears();
                 LoadBuyersAsync();
                 BuyersCount();
             }
@@ -166,6 +167,19 @@ namespace PPAsta.Pages
         }
 
         private async void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                LoadBuyersAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async void ComboBoxYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
