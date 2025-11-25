@@ -31,7 +31,7 @@ namespace PPAsta.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PaymentsPage : Page, IForServiceCollectionExtension
+    public sealed partial class PaymentsPage : Page, IForServiceCollectionExtension, INavigationAware
     {
         private readonly ILogger<PaymentsPage> _logger;
         private ContentDialog _currentDialog;
@@ -49,6 +49,18 @@ namespace PPAsta.Pages
             _navigationService = navigationService;
         }
 
+        public async void OnNavigatedTo(object parameter)
+        {
+            try
+            {
+                await _paymentViewModel.ReloadPaymentsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
 
         private void LoadComponents()
         {
@@ -199,8 +211,8 @@ namespace PPAsta.Pages
 
                 if (button?.Tag != null)
                 {
-                    var payment = button.Tag as SrvPayment;
-                    //await OpenPaymentDialogAsync(payment!);
+                    var paymentDetail = button.Tag as SrvPaymentDetail;
+                    _navigationService.NavigateTo<PaymentHandlePage>(paymentDetail!);
                 }
             }
             catch (Exception ex)

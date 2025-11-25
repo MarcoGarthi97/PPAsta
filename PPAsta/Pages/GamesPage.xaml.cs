@@ -218,7 +218,7 @@ namespace PPAsta.Pages
                     gameViewModel.ClearData();
 
                     var game = button.Tag as SrvGameDetail;
-                    _navigationService.NavigateTo<PaymentGamesPage>(game);
+                    _navigationService.NavigateTo<PaymentGamesPage>(game!);
                 }
             }
             catch (Exception ex)

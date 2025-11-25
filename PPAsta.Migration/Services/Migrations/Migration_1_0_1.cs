@@ -33,38 +33,39 @@ namespace PPAsta.Migration.Services.Migrations
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
-            await connection.QueryAsync($@"CREATE TABLE HELPERS (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                Key VARCHAR NOT NULL,
-                Json VARCHAR NOT NULL,
-                RCD DATETIME NOT NULL,
-                RUD DATETIME NOT NULL
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS HELPERS (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Key VARCHAR NOT NULL,
+                    Json VARCHAR NOT NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
                 )
             ");
 
-            await connection.QueryAsync($@"CREATE TABLE GAMES (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                Name VARCHAR NOT NULL,
-                Owner VARCHAR NOT NULL,
-                Year INTEGER NOT NULL,
-                RCD DATETIME NOT NULL,
-                RUD DATETIME NOT NULL
-                )
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS GAMES (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name VARCHAR NOT NULL,
+                    Owner VARCHAR NOT NULL,
+                    Year INTEGER NOT NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
+                );
             ");
 
-            await connection.QueryAsync($@"CREATE TABLE PAYMENTGAMES (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                GameID INTEGER NOT NULL,
-                PaymentID INTEGER NOT NULL,
-                PaymentProcess INTEGER NOT NULL,
-                Buyer INTEGER NULL,
-                SellingPrice REAL NOT NULL,
-                PurchasePrice REAL NULL,
-                ShareOwner REAL NULL,
-                SharePP REAL NULL,
-                RCD DATETIME NOT NULL,
-                RUD DATETIME NOT NULL
-            );");
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS PAYMENTGAMES (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    GameID INTEGER NOT NULL,
+                    BuyerID INTEGER NULL,
+                    PaymentProcess INTEGER NOT NULL,
+                    PaymentType SMALLINT NULL,
+                    SellingPrice REAL NOT NULL,
+                    PurchasePrice REAL NULL,
+                    ShareOwner REAL NULL,
+                    SharePP REAL NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
+                );
+            ");
         }
     }
 }

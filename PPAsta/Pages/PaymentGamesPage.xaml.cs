@@ -54,7 +54,7 @@ namespace PPAsta.Pages
             {
                 if (parameter is SrvGameDetail dto)
                 {
-                    _paymentGameViewModel.LoadDataAsync(dto);
+                    await _paymentGameViewModel.LoadDataAsync(dto);
                 }
             }
             catch (Exception ex)

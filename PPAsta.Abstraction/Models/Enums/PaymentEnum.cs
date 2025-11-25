@@ -19,4 +19,12 @@ namespace PPAsta.Abstraction.Models.Enums
         NotFullyPaid = 1,
         Paid = 2
     }
+
+    public enum PaymentType
+    {
+        Cash = 0,
+        Paypal = 1,
+        BankTransfer = 2,
+        Other = 3
+    }
 }

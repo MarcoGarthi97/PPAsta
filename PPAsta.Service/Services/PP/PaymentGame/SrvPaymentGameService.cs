@@ -15,6 +15,7 @@ namespace PPAsta.Service.Services.PP.PaymentGame
 {    
     public interface ISrvPaymentGameService : IForServiceCollectionExtension
     {
+        Task BulkUpdatePaymentGameAsync(IEnumerable<SrvPaymentGame> paymentGames);
         Task DeletePaymentGameAsync(SrvPaymentGame paymentGame);
         Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<SrvPaymentGame>> GetAllPaymentGamesAsync();
@@ -76,6 +77,17 @@ namespace PPAsta.Service.Services.PP.PaymentGame
             paymentRepository.RUD = DateTime.Now;
 
             await _paymentGameRepository.UpdatePaymentGameAsync(paymentRepository);
+        }
+
+        public async Task BulkUpdatePaymentGameAsync(IEnumerable<SrvPaymentGame> paymentGames)
+        {
+            var paymentsRepository = _mapper.Map<IEnumerable<MdlPaymentGame>>(paymentGames);
+            foreach (var paymentRepository in paymentsRepository)
+            {
+                paymentRepository.RUD = DateTime.Now;
+            }
+
+            await _paymentGameRepository.BulkUpdatePaymentGameAsync(paymentsRepository);
         }
 
         public async Task DeletePaymentGameAsync(SrvPaymentGame paymentGame)

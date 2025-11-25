@@ -96,10 +96,6 @@ namespace PPAsta.Migration.Services.Orchestrator
             }
 
             return false;
-
-            //return Convert.ToInt32(vDB[0]) >= Convert.ToInt32(vMigration[0])
-            //    || Convert.ToInt32(vDB[1]) >= Convert.ToInt32(vMigration[1])
-            //    || Convert.ToInt32(vDB[2]) >= Convert.ToInt32(vMigration[2]);
         }   
     }
 }

@@ -16,9 +16,9 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
     public interface IMdlPaymentRepository : IForServiceCollectionExtension
     {
         Task DeletePaymentAsync(MdlPayment Payment);
-        Task DeletePaymentByIdsAsync(IEnumerable<int> ids);
+        Task DeletePaymentByBuyerIdsAsync(IEnumerable<int> ids);
         Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync();
-        Task<MdlPayment> GetPaymentGameAsyncByBuyerId(int buyerId);
+        Task<MdlPayment> GetPaymentByBuyerIdAsync(int buyerId);
         Task<MdlPayment> GetPaymentByIdAsync(int id);
         Task InsertPaymentAsync(MdlPayment Payment);
         Task InsertPaymentsAsync(IEnumerable<MdlPayment> Payments);
@@ -32,7 +32,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
         {
         }
 
-        public async Task<MdlPayment> GetPaymentGameAsyncByBuyerId(int buyerId)
+        public async Task<MdlPayment> GetPaymentByBuyerIdAsync(int buyerId)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
@@ -41,17 +41,17 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
             return await connection.QueryFirstOrDefaultAsync<MdlPayment>(sql, new { buyerId });
         }
 
-        public async Task<MdlPayment> GetPaymentByIdAsync(int gameId)
+        public async Task<MdlPayment> GetPaymentByIdAsync(int buyerId)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             string sql = $@"SELECT P.* 
                 FROM PAYMENTGAMES PG
                 JOIN PAYMENTS P
-                ON PG.PaymentID = P.ID
-                WHERE PG.ID = @gameId";
+                ON PG.BuyerID = P.BuyerID
+                WHERE PG.BuyerID = @buyerId";
 
-            return await connection.QueryFirstOrDefaultAsync<MdlPayment>(sql, new { gameId });
+            return await connection.QueryFirstOrDefaultAsync<MdlPayment>(sql, new { buyerId });
         }
 
         public async Task<IEnumerable<MdlPayment>> GetAllPaymentsAsync()
@@ -104,11 +104,11 @@ namespace PPAsta.Repository.Services.Repositories.PP.Payment
             await connection.DeleteAsync(Payment);
         }
 
-        public async Task DeletePaymentByIdsAsync(IEnumerable<int> ids)
+        public async Task DeletePaymentByBuyerIdsAsync(IEnumerable<int> ids)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
-            string sql = @"DELETE FROM PAYMENTS WHERE ID IN @ids";
+            string sql = @"DELETE FROM PAYMENTS WHERE BuyerID IN @ids";
 
             await connection.QueryAsync(sql, new { ids });
         }

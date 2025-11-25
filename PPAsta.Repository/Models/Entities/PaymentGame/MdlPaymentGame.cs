@@ -16,12 +16,12 @@ namespace PPAsta.Repository.Models.Entities.PaymentGame
         public int Id { get; set; }
         [Column("GameID")]
         public int GameId { get; set; }
-        [Column("PaymentID")]
-        public int PaymentId { get; set; }
         [Column("BuyerID")]
         public int? BuyerId { get; set; }
         [Column("PaymentProcess")]
         public PaymentGameProcess PaymentProcess { get; set; }
+        [Column("PaymentType")]
+        public PaymentType? PaymentType { get; set; }
         [Column("SellingPrice")]
         public decimal SellingPrice { get; set; }
         [Column("PurchasePrice")]

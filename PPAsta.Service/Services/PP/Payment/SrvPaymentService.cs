@@ -15,14 +15,17 @@ namespace PPAsta.Service.Services.PP.Payment
 {
     public interface ISrvPaymentService : IForServiceCollectionExtension
     {
+        Task CalculatedPaymentsAsync(int buyerId);
         Task DeletePaymentAsync(SrvPayment Payment);
-        Task DeletePaymentByIdsAsync(IEnumerable<int> ids);
+        Task DeletePaymentByBuyerIdsAsync(IEnumerable<int> ids);
         Task<IEnumerable<SrvPaymentDetail>> GetAllPaymentDetailsAsync();
         Task<IEnumerable<SrvPayment>> GetAllPaymentsAsync();
+        Task<SrvPayment> GetPaymentByBuyerIdAsync(int buyerId);
         Task InsertPaymentAsync(SrvPayment Payment);
+        Task InsertPaymentAsync(SrvPaymentGame paymentGame);
         Task InsertPaymentsAsync(IEnumerable<SrvPayment> Payment);
+        Task RemoveGameForPaymentAsync(int oldBuyerId);
         Task UpdatePaymentAsync(SrvPayment Payment);
-        Task<int> UpsertPaymentAsync(SrvPaymentGame paymentGame);
     }
 
     public class SrvPaymentService : ISrvPaymentService
@@ -48,6 +51,12 @@ namespace PPAsta.Service.Services.PP.Payment
         {
             var paymentsRepository = await _paymentRepository.GetAllPaymentDetailsAsync();
             return _mapper.Map<IEnumerable<SrvPaymentDetail>>(paymentsRepository);
+        }
+
+        public async Task<SrvPayment> GetPaymentByBuyerIdAsync(int buyerId)
+        {
+            var paymentRepository = await _paymentRepository.GetPaymentByBuyerIdAsync(buyerId);
+            return _mapper.Map<SrvPayment>(paymentRepository);
         }
 
         public async Task InsertPaymentAsync(SrvPayment Payment)
@@ -85,59 +94,63 @@ namespace PPAsta.Service.Services.PP.Payment
             await _paymentRepository.DeletePaymentAsync(paymentRepository);
         }
 
-        public async Task DeletePaymentByIdsAsync(IEnumerable<int> ids)
+        public async Task DeletePaymentByBuyerIdsAsync(IEnumerable<int> ids)
         {
-            await _paymentRepository.DeletePaymentByIdsAsync(ids);
+            await _paymentRepository.DeletePaymentByBuyerIdsAsync(ids);
         }
 
-        public async Task<int> UpsertPaymentAsync(SrvPaymentGame paymentGame)
+        public async Task RemoveGameForPaymentAsync(int oldBuyerId)
         {
-            MdlPayment paymentRepository = await _paymentRepository.GetPaymentByIdAsync(paymentGame.GameId);
-
-            int id;
-            if (paymentRepository != null && paymentRepository.BuyerId != paymentGame.BuyerId)
+            var paymentRepository = await _paymentRepository.GetPaymentByIdAsync(oldBuyerId);
+            var paymentGames = await _paymentGameService.GetAllPaymentGamesByBuyerIdAsync(oldBuyerId);
+            if (paymentGames.Count() == 0)
             {
-                var paymentGames = await _paymentGameService.GetAllPaymentGamesByBuyerIdAsync(paymentRepository.BuyerId);
-                if (paymentGames.Count() == 1)
-                {
-                    await _paymentRepository.DeletePaymentAsync(paymentRepository);
-                    paymentRepository = null;
-                }
-                else
-                {
-                    paymentRepository.TotalPurchasePrice -= paymentGame.PurchasePrice.Value;
-                    paymentRepository.TotalShareOwner -= paymentGame.ShareOwner.Value;
-                    paymentRepository.TotalSharePP -= paymentGame.SharePP.Value;
-                    paymentRepository.RUD = DateTime.Now;
-
-                    await _paymentRepository.UpdatePaymentAsync(paymentRepository);
-                }
+                await _paymentRepository.DeletePaymentByBuyerIdsAsync([oldBuyerId]);
+                paymentRepository = null;
             }
+            else
+            {
+                await CalculatedPaymentsAsync(oldBuyerId);
+            }
+        }
 
-            paymentRepository = await _paymentRepository.GetPaymentGameAsyncByBuyerId(paymentGame.BuyerId.Value);
-
+        public async Task InsertPaymentAsync(SrvPaymentGame paymentGame)
+        {
+            var paymentRepository = await _paymentRepository.GetPaymentByBuyerIdAsync(paymentGame.BuyerId.Value);
             if (paymentRepository == null)
             {
                 SrvPayment paymentTemp = _mapper.Map<SrvPayment>(paymentGame);
                 await InsertPaymentAsync(paymentTemp);
 
-                paymentRepository = await _paymentRepository.GetPaymentGameAsyncByBuyerId(paymentGame.BuyerId.Value);
-                id = paymentRepository.Id;
+                paymentRepository = await _paymentRepository.GetPaymentByBuyerIdAsync(paymentGame.BuyerId.Value);
             }
             else
             {
-                paymentRepository.BuyerId = paymentGame.BuyerId.Value;
-                paymentRepository.TotalPurchasePrice += paymentGame.PurchasePrice.Value;
-                paymentRepository.TotalShareOwner += paymentGame.ShareOwner.Value;
-                paymentRepository.TotalSharePP += paymentGame.SharePP.Value;
+                await CalculatedPaymentsAsync(paymentGame.BuyerId.Value);
+            }
+        }
+
+        public async Task CalculatedPaymentsAsync(int buyerId)
+        {
+            var paymentGames = await _paymentGameService.GetAllPaymentGamesByBuyerIdAsync(buyerId);
+            if (paymentGames.Any())
+            {
+                var paymentRepository = await _paymentRepository.GetPaymentByBuyerIdAsync(buyerId);
+                paymentRepository.TotalPurchasePrice = 0;
+                paymentRepository.TotalShareOwner = 0;
+                paymentRepository.TotalSharePP = 0;
+
+                foreach (var paymentGame in paymentGames)
+                {
+                    paymentRepository.TotalPurchasePrice += paymentGame.PurchasePrice.Value;
+                    paymentRepository.TotalShareOwner += paymentGame.ShareOwner.Value;
+                    paymentRepository.TotalSharePP += paymentGame.SharePP.Value;
+                }
+
                 paymentRepository.RUD = DateTime.Now;
 
                 await _paymentRepository.UpdatePaymentAsync(paymentRepository);
-
-                id = paymentRepository.Id;
             }
-
-            return id;
         }
     }
 }

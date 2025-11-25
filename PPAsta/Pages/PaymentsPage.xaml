@@ -59,7 +59,7 @@
                 </controls:DataGridTemplateColumn>
                 <controls:DataGridTextColumn Header="Acquirente" Tag="BuyerName" Binding="{Binding BuyerName}" />
                 <controls:DataGridTextColumn Header="Totale acquisto" Tag="TotalPurchasePrice" Binding="{Binding TotalPurchasePrice}" />
-                <controls:DataGridTextColumn Header="Quota Proprietario" Tag="TotalShareOwner" Binding="{Binding TotalShareOwner}" />
+                <controls:DataGridTextColumn Header="Quota Proprietari" Tag="TotalShareOwner" Binding="{Binding TotalShareOwner}" />
                 <controls:DataGridTextColumn Header="Quota PP" Tag="TotalSharePP" Binding="{Binding TotalSharePP}" />
                 <controls:DataGridTextColumn Header="Totale Giochi" Tag="TotalGames" Binding="{Binding TotalGames}" />
                 <controls:DataGridTextColumn Header="Anno" Tag="Year" Binding="{Binding Year}" />
