@@ -17,6 +17,7 @@ namespace PPAsta.Service.Services.PP.Game
         Task DeleteGameAsync(SrvGame game);
         Task DeleteGameByYearsAsync(IEnumerable<int> years);
         Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsAsync();
+        Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
         Task<IEnumerable<SrvGame>> GetAllGamesAsync();
         Task<IEnumerable<SrvGame>> GetGamesByYearsAsync(IEnumerable<int> years);
         Task InsertGameAsync(SrvGame game);
@@ -44,6 +45,12 @@ namespace PPAsta.Service.Services.PP.Game
         public async Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsAsync()
         {
             var gamesRepository = await _gameRepository.GetAllGameDetailsAsync();
+            return _mapper.Map<IEnumerable<SrvGameDetail>>(gamesRepository);
+        }
+
+        public async Task<IEnumerable<SrvGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId)
+        {
+            var gamesRepository = await _gameRepository.GetAllGameDetailsByBuyerIdAsync(buyerId);
             return _mapper.Map<IEnumerable<SrvGameDetail>>(gamesRepository);
         }
 

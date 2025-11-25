@@ -33,26 +33,26 @@ namespace PPAsta.Migration.Services.Migrations
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
-            await connection.QueryAsync($@"CREATE TABLE BUYERS (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                Name VARCHAR NOT NULL,
-                Number INTEGER NOT NULL,
-                Year INTEGER NOT NULL,
-                RCD DATETIME NOT NULL,
-                RUD DATETIME NOT NULL
-                )
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS BUYERS (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name VARCHAR NOT NULL,
+                    Number INTEGER NOT NULL,
+                    Year INTEGER NOT NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
+                );
             ");
 
-            await connection.QueryAsync($@"CREATE TABLE PAYMENTS (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                BuyerID INTEGER NOT NULL,
-                PaymentProcess INTEGER NOT NULL,
-                TotalPurchasePrice REAL NOT NULL,
-                TotalShareOwner REAL NOT NULL,
-                TotalSharePP REAL NOT NULL,
-                RCD DATETIME NOT NULL,
-                RUD DATETIME NOT NULL
-                )
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS PAYMENTS (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    BuyerID INTEGER NOT NULL,
+                    PaymentProcess INTEGER NOT NULL,
+                    TotalPurchasePrice REAL NOT NULL,
+                    TotalShareOwner REAL NOT NULL,
+                    TotalSharePP REAL NOT NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
+                );
             ");
         }
     }

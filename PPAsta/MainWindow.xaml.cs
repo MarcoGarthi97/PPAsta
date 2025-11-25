@@ -71,16 +71,11 @@ namespace PPAsta
                     case "gamesPage":
                         _navigationService.NavigateTo<GamesPage>("");
                         break;
-                    //case "usersPage":
-                    //    var usersPage = _serviceProvider.GetRequiredService<UsersPage>();
-                    //    ContentFrame.Content = usersPage;
-                    //    break;
-                    //case "eventsPage":
-                    //    var eventsPage = _serviceProvider.GetRequiredService<EventsPage>();
-                    //    ContentFrame.Content = eventsPage;
-                    //    break;
                     case "buyersPage":
                         _navigationService.NavigateTo<BuyersPage>("");
+                        break;
+                    case "paymentsPage":
+                        _navigationService.NavigateTo<PaymentsPage>("");
                         break;
                     case "settingsPage":
                         _navigationService.NavigateTo<SettingsPage>("");

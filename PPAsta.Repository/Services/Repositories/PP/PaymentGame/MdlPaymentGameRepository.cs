@@ -15,6 +15,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
 {
     public interface IMdlPaymentGameRepository : IForServiceCollectionExtension
     {
+        Task BulkUpdatePaymentGameAsync(IEnumerable<MdlPaymentGame> Payments);
         Task DeletePaymentGameAsync(MdlPaymentGame Payment);
         Task DeletePaymentGamesByGameIdsAsync(IEnumerable<int> gameIds);
         Task<IEnumerable<MdlPaymentGame>> GetAllPaymentGamesAsync();
@@ -81,6 +82,12 @@ namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
             await connection.UpdateAsync(Payment);
+        }
+
+        public async Task BulkUpdatePaymentGameAsync(IEnumerable<MdlPaymentGame> Payments)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+            await connection.BulkUpdateAsync(Payments);
         }
 
         public async Task DeletePaymentGameAsync(MdlPaymentGame Payment)

@@ -96,7 +96,7 @@ namespace PPAsta.ViewModels
             SellingPrice = (double)gameDetail.SellingPrice;
 
             var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(gameDetail.Id);
-            if (paymentGame != null)
+            if (paymentGame != null && paymentGame.BuyerId.HasValue)
             {
                 PurchasePrice = paymentGame.PurchasePrice.ToString();
                 SharePP = (double)paymentGame.SharePP!;
@@ -143,6 +143,8 @@ namespace PPAsta.ViewModels
         {
             var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(_gameId);
 
+            var oldBuyerId = paymentGame.BuyerId;
+
             paymentGame.PurchasePrice = Convert.ToDecimal(PurchasePrice);
             paymentGame.SharePP = (decimal)SharePP!;
             paymentGame.ShareOwner = (decimal)ShareOwner!;
@@ -150,10 +152,14 @@ namespace PPAsta.ViewModels
             paymentGame.PaymentProcess = PaymentGameProcess.ToBePaid;
             paymentGame.RUD = DateTime.Now;
 
-            int paymentId = await _paymentService.UpsertPaymentAsync(paymentGame);
-            paymentGame.PaymentId = paymentId;
-
             await _paymentGameService.UpdatePaymentGameAsync(paymentGame);
+
+            if (oldBuyerId.HasValue)
+            {
+                await _paymentService.RemoveGameForPaymentAsync(oldBuyerId.Value);
+            }
+
+            await _paymentService.InsertPaymentAsync(paymentGame);
         }
 
         public bool CheckField()

@@ -2,20 +2,24 @@
 using Microsoft.UI.Xaml.Media;
 using PPAsta.Abstraction.Models.Enums;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PPAsta.Converters
 {
-    public class PaymentProcessToBrushConverter : IValueConverter
+    public class PaymentGameProcessToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is PaymentProcess process)
+            if (value is PaymentGameProcess process)
             {
                 return process switch
                 {
-                    PaymentProcess.ToBePaid => new SolidColorBrush(Microsoft.UI.Colors.Red),
-                    PaymentProcess.NotFullyPaid => new SolidColorBrush(Microsoft.UI.Colors.Yellow),
-                    PaymentProcess.Paid => new SolidColorBrush(Microsoft.UI.Colors.Green),
+                    PaymentGameProcess.Insert => new SolidColorBrush(Microsoft.UI.Colors.Gray),
+                    PaymentGameProcess.ToBePaid => new SolidColorBrush(Microsoft.UI.Colors.Yellow),
+                    PaymentGameProcess.Paid => new SolidColorBrush(Microsoft.UI.Colors.Green),
                     _ => new SolidColorBrush(Microsoft.UI.Colors.Gray)
                 };
             }

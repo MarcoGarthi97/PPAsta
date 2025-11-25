@@ -23,6 +23,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
         Task InsertGameAsync(MdlGame game);
         Task InsertGamesAsync(IEnumerable<MdlGame> games);
         Task UpdateGameAsync(MdlGame game);
+        Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
     }
 
     public class MdlGameRepository : BaseRepository<MdlGame>, IMdlGameRepository
@@ -66,13 +67,27 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             string sql = @$"
-                SELECT S.*, P.*, B.Name AS Buyer  
-                FROM GAMES S
-                JOIN PAYMENTGAMES P ON S.ID = P.GameID 
+                SELECT G.*, P.PaymentProcess, P.PaymentType, P.SellingPrice, P.PurchasePrice, P.ShareOwner, P.SharePP, B.Name AS Buyer  
+                FROM GAMES G
+                JOIN PAYMENTGAMES P ON G.ID = P.GameID 
                 LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
             ";
 
             return await connection.QueryAsync<MdlGameDetail>(sql);
+        }
+
+        public async Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = @$"
+                SELECT G.*, P.PaymentProcess, P.PaymentType, P.SellingPrice, P.PurchasePrice, P.ShareOwner, P.SharePP, B.Name AS Buyer  
+                FROM GAMES G
+                JOIN PAYMENTGAMES P ON G.ID = P.GameID AND P.BuyerID = @buyerId
+                LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
+            ";
+
+            return await connection.QueryAsync<MdlGameDetail>(sql, new { buyerId });
         }
 
         public async Task DeleteGameByYearsAsync(IEnumerable<int> years)

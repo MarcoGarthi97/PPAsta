@@ -12,9 +12,9 @@ namespace PPAsta.Service.Models.PP.PaymentGame
     {        
         public int Id { get; set; }
         public int GameId { get; set; }
-        public int PaymentId { get; set; }
         public int? BuyerId { get; set; }
         public PaymentGameProcess PaymentProcess { get; set; }
+        public PaymentType? PaymentType { get; set; }
         public decimal SellingPrice { get; set; }
         public decimal? PurchasePrice { get; set; }
         public decimal? ShareOwner { get; set; }
