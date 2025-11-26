@@ -78,15 +78,13 @@
                         <StackPanel Grid.Column="0"  Spacing="4">
                             <TextBlock Text="Numero acquirente" FontWeight="SemiBold" FontSize="14"/>
                             <TextBox 
-         Text="{Binding Number, Mode=TwoWay}" 
-                                IsReadOnly="True" />
+         Text="{Binding Number, Mode=TwoWay}"  />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Spacing="4">
                             <TextBlock Text="Nome acquirente" FontWeight="SemiBold" FontSize="14"/>
                                     <TextBox 
-         Text="{Binding BuyerName, Mode=TwoWay}" 
-                                IsReadOnly="True"/>
+         Text="{Binding BuyerName, Mode=TwoWay}" />
                                 </StackPanel>
 
                         <StackPanel Grid.Column="2" Spacing="4">
