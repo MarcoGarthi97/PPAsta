@@ -26,7 +26,7 @@
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xe8c7;" />
                 </muxc:NavigationViewItem.Icon>
             </muxc:NavigationViewItem>
-            <muxc:NavigationViewItem Content="Compratori" Icon="People" Tag="buyersPage"/>
+            <muxc:NavigationViewItem Content="Acquirenti" Icon="People" Tag="buyersPage"/>
             <muxc:NavigationViewItem Content="Settings" Icon="Setting" Tag="settingsPage"/>
         </muxc:NavigationView.MenuItems>
 
