@@ -39,12 +39,14 @@ namespace PPAsta.Pages
         private readonly ILogger<GamesPage> _logger;
         private ContentDialog _currentDialog;
         private readonly INavigationService _navigationService;
+        GameViewModel _gameViewModel;
 
         public GamesPage(GameViewModel gameViewModel, ILogger<GamesPage> logger, INavigationService navigationService)
         {
             InitializeComponent();
             this.DataContext = gameViewModel;
             _logger = logger;
+            _gameViewModel = (GameViewModel)DataContext;
 
             LoadComponents();
             _navigationService = navigationService;
@@ -54,8 +56,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                GameViewModel gameViewModel = (GameViewModel)DataContext;
-                await gameViewModel.ReloadGamesAsync();
+                await _gameViewModel.ReloadGamesAsync();
             }
             catch (Exception ex)
             {
@@ -68,6 +69,7 @@ namespace PPAsta.Pages
         {
             if (SrvAppConfigurationStorage.DatabaseConfiguration.DatabaseExists)
             {
+                _gameViewModel.LoadComboBoxYear();
                 LoadGamesAsync();
                 GamesCount();
             }
@@ -109,8 +111,33 @@ namespace PPAsta.Pages
         {
             try
             {
-                GameViewModel gameViewModel = (GameViewModel)DataContext;
-                await gameViewModel.LoadGamesAsync();
+                await _gameViewModel.LoadGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async void ComboBoxYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                LoadGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
             }
             catch (Exception ex)
             {
@@ -123,8 +150,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
-                await gameViewModel.PrevButton();
+                await _gameViewModel.PrevButton();
             }
             catch (Exception ex)
             {
@@ -137,8 +163,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
-                await gameViewModel.NextButton();
+                await _gameViewModel.NextButton();
             }
             catch (Exception ex)
             {
@@ -151,8 +176,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
-                await gameViewModel.LoadGamesAsync();
+                await _gameViewModel.LoadGamesAsync();
 
                 string propertyName = e.Column.Tag?.ToString();
 
@@ -169,7 +193,7 @@ namespace PPAsta.Pages
                         }
                     }
 
-                    await gameViewModel.DataSortAsync(propertyName, isAscending);
+                    await _gameViewModel.DataSortAsync(propertyName, isAscending);
                 }
             }
             catch (Exception ex)
@@ -196,8 +220,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var gameViewModel = (GameViewModel)DataContext;
-                gameViewModel.GamesCountAsync();
+                _gameViewModel.GamesCountAsync();
             }
             catch (Exception ex)
             {
@@ -214,8 +237,7 @@ namespace PPAsta.Pages
                 
                 if (button?.Tag != null)
                 {
-                    var gameViewModel = (GameViewModel)DataContext;
-                    gameViewModel.ClearData();
+                    _gameViewModel.ClearData();
 
                     var game = button.Tag as SrvGameDetail;
                     _navigationService.NavigateTo<PaymentGamesPage>(game!);

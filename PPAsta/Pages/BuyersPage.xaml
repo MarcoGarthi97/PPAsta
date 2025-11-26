@@ -29,7 +29,7 @@
                  Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                  TextChanged="OnTextChanged"
                  Header="Ricerca"
-                 PlaceholderText="Ricerca per nome, numero o anno"
+                 PlaceholderText="Ricerca per nome o numero"
                  Margin="0,0,10,0" />
 
             <!-- ComboBox filtro -->
@@ -38,6 +38,7 @@
                   ItemsSource="{Binding FilterYears}"
                   SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
                   SelectionChanged="ComboBoxYears_SelectionChanged"
+                  PlaceholderText="Seleziona anno"
                   />
         </Grid>
 

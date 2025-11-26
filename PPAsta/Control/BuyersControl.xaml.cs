@@ -56,15 +56,6 @@ namespace PPAsta.Control
         public BuyersControl()
         {
             InitializeComponent();
-            //Loaded += BuyersControl_Loaded;
-        }
-
-        private void BuyersControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is BuyerViewModel viewModel)
-            {
-                viewModel.LoadComboBoxYears();
-            }
         }
 
         private async void OnTextChanged(object sender, TextChangedEventArgs e)

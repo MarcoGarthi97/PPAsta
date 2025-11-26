@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Models.PP.PaymentGame;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.PaymentGame;
+using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,6 +33,7 @@ namespace PPAsta.ViewModels
         public int _count = -1;
 
         public ObservableCollection<SrvGameDetail> Games { get; } = new ObservableCollection<SrvGameDetail>();
+        public ObservableCollection<ComboBoxPP> FilterYears { get; } = new ObservableCollection<ComboBoxPP>();
 
         public GameViewModel(ISrvGameService gameService, ISrvPaymentGameService paymentGameService)
         {
@@ -58,6 +61,17 @@ namespace PPAsta.ViewModels
             set => SetProperty(ref _pageText, value);
         }
 
+        private ComboBoxPP _selectedFilter;
+        public ComboBoxPP SelectedFilter
+        {
+            get => _selectedFilter;
+            set
+            {
+                _selectedFilter = value;
+                OnPropertyChanged();
+            }
+        }
+
         public async Task LoadGamesAsync()
         {
             var gamesTemp = await GetGamesFilteredAsync();
@@ -67,6 +81,7 @@ namespace PPAsta.ViewModels
         public async Task ReloadGamesAsync()
         {
             ClearData();
+            LoadComboBoxYear();
 
             await LoadGamesAsync();
         }
@@ -74,6 +89,27 @@ namespace PPAsta.ViewModels
         public void ClearData()
         {
             _gamesList = new List<SrvGameDetail>();
+        }
+
+        public void LoadComboBoxYear()
+        {
+            FilterYears.Clear();
+            
+            int year = SrvAppConfigurationStorage.OldestYear;
+
+            FilterYears.Add(new ComboBoxPP { DisplayName = "", Value = -1 });
+
+            while (year <= DateTime.Now.Year)
+            {
+                FilterYears.Add(new ComboBoxPP { DisplayName = year.ToString(), Value = year });
+
+                if (SrvAppConfigurationStorage.InitializeYearNow.IsYearInitialized && SrvAppConfigurationStorage.InitializeYearNow.Year == year)
+                {
+                    SelectedFilter = FilterYears.FirstOrDefault();
+                }
+
+                year++;
+            }
         }
 
         private async Task<IEnumerable<SrvGameDetail>> GetGamesFilteredAsync()
@@ -97,8 +133,12 @@ namespace PPAsta.ViewModels
 
         private Func<SrvGameDetail, bool> BuildPredicate()
         {
-            return e => e.Name.ToLower().Contains(_textResearch.ToLower())
-                        || e.Owner.ToLower().Contains(_textResearch.ToLower());
+            return e => (string.IsNullOrEmpty(_textResearch) 
+                        || e.Name.ToLower().Contains(_textResearch.ToLower())
+                        || e.Owner.ToLower().Contains(_textResearch.ToLower()))
+                        && (SelectedFilter == null 
+                        || string.IsNullOrEmpty(SelectedFilter.DisplayName) 
+                        || e.Year.ToString() == SelectedFilter.DisplayName);
         }
 
         public int GamesCountAsync()
