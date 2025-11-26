@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -70,6 +71,14 @@ namespace PPAsta.Control
             if (SelectedBuyer != null)
             {
                 BuyerSelected?.Invoke(this, SelectedBuyer);
+            }
+        }
+
+        private async void ComboBoxYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is BuyerViewModel viewModel)
+            {
+                await viewModel.LoadBuyersAsync();
             }
         }
     }

@@ -74,6 +74,18 @@ namespace PPAsta.Pages
                 this.Loaded += TablesPage_Loaded;
             }
         }
+        private async void ComboBoxYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                LoadPaymentsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
 
         private void TablesPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -106,8 +118,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var paymentViewModel = (PaymentViewModel)DataContext;
-                await paymentViewModel.LoadPaymentsAsync();
+                await _paymentViewModel.LoadPaymentsAsync();
             }
             catch (Exception ex)
             {
@@ -120,8 +131,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var paymentViewModel = (PaymentViewModel)DataContext;
-                await paymentViewModel.PrevButton();
+                await _paymentViewModel.PrevButton();
             }
             catch (Exception ex)
             {
@@ -134,8 +144,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var paymentViewModel = (PaymentViewModel)DataContext;
-                await paymentViewModel.NextButton();
+                await _paymentViewModel.NextButton();
             }
             catch (Exception ex)
             {
@@ -148,8 +157,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var paymentViewModel = (PaymentViewModel)DataContext;
-                await paymentViewModel.LoadPaymentsAsync();
+                await _paymentViewModel.LoadPaymentsAsync();
 
                 string propertyName = e.Column.Tag?.ToString();
 
@@ -166,7 +174,7 @@ namespace PPAsta.Pages
                         }
                     }
 
-                    await paymentViewModel.DataSortAsync(propertyName, isAscending);
+                    await _paymentViewModel.DataSortAsync(propertyName, isAscending);
                 }
             }
             catch (Exception ex)
@@ -193,8 +201,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var paymentViewModel = (PaymentViewModel)DataContext;
-                paymentViewModel.PaymentsCountAsync();
+                _paymentViewModel.PaymentsCountAsync();
             }
             catch (Exception ex)
             {

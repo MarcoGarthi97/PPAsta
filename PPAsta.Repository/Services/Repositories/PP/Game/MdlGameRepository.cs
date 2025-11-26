@@ -24,6 +24,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
         Task InsertGamesAsync(IEnumerable<MdlGame> games);
         Task UpdateGameAsync(MdlGame game);
         Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
+        Task<int> GetOldestYearAsync();
     }
 
     public class MdlGameRepository : BaseRepository<MdlGame>, IMdlGameRepository
@@ -106,6 +107,15 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             string sql = "SELECT * FROM GAMES WHERE Year in @years;";
 
             return await connection.QueryAsync<MdlGame>(sql, new { years });
+        }
+
+        public async Task<int> GetOldestYearAsync()
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = "SELECT Year FROM GAMES ORDER BY YEAR ASC;";
+
+            return await connection.QueryFirstAsync<int>(sql);
         }
     }
 }

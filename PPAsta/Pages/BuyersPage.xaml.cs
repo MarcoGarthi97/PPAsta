@@ -11,7 +11,9 @@ using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Buyer;
+using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Storages.PP;
+using PPAsta.Services.Navigation;
 using PPAsta.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -33,7 +35,7 @@ namespace PPAsta.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class BuyersPage : Page, IForServiceCollectionExtension
+    public sealed partial class BuyersPage : Page, IForServiceCollectionExtension, INavigationAware
     {
         private readonly ILogger<BuyersPage> _logger;
         private BuyerViewModel _buyerViewModel; 
@@ -55,12 +57,26 @@ namespace PPAsta.Pages
         {
             if (SrvAppConfigurationStorage.DatabaseConfiguration.DatabaseExists)
             {
+                _buyerViewModel.LoadComboBoxYears();
                 LoadBuyersAsync();
                 BuyersCount();
             }
             else
             {
                 this.Loaded += TablesPage_Loaded;
+            }
+        }
+
+        public async void OnNavigatedTo(object parameter)
+        {
+            try
+            {
+                LoadComponents();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
             }
         }
 
@@ -166,6 +182,19 @@ namespace PPAsta.Pages
         }
 
         private async void OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                LoadBuyersAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async void ComboBoxYears_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {

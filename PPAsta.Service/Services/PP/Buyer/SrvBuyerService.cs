@@ -14,7 +14,7 @@ namespace PPAsta.Service.Services.PP.Buyer
     public interface ISrvBuyerService : IForServiceCollectionExtension
     {
         Task DeleteBuyerAsync(SrvBuyer buyer);
-        Task<List<SrvBuyer>> GetAllBuyersAsync();
+        Task<List<SrvBuyer>> GetAllBuyersAsync(int? year = null);
         Task<IEnumerable<SrvBuyer>> GetBuyerAsync(int number, int year);
         Task<SrvBuyer> GetBuyerByIdAsync(int id);
         List<SrvBuyer> GetContentByCSV(string content);
@@ -35,9 +35,9 @@ namespace PPAsta.Service.Services.PP.Buyer
             _mapper = mapper;
         }
 
-        public async Task<List<SrvBuyer>> GetAllBuyersAsync()
+        public async Task<List<SrvBuyer>> GetAllBuyersAsync(int? year = null)
         {
-            var buyersRepository = await _buyerRepository.GetAllBuyersAsync();
+            var buyersRepository = await _buyerRepository.GetAllBuyersAsync(year);
             return _mapper.Map<List<SrvBuyer>>(buyersRepository);
         }
 

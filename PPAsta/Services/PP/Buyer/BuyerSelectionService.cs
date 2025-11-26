@@ -16,7 +16,7 @@ namespace PPAsta.Service.Services.PP.Buyer
 {
     public interface IBuyerSelectionService : IForServiceCollectionExtension
     {
-        Task<SrvBuyer> SelectBuyerAsync(XamlRoot xamlRoot);
+        Task<SrvBuyer> SelectBuyerAsync(XamlRoot xamlRoot, int year);
     }
 
     public class BuyerSelectionService : IBuyerSelectionService
@@ -28,7 +28,7 @@ namespace PPAsta.Service.Services.PP.Buyer
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<SrvBuyer> SelectBuyerAsync(XamlRoot xamlRoot)
+        public async Task<SrvBuyer> SelectBuyerAsync(XamlRoot xamlRoot, int year)
         {
             var dialog = new ContentDialog
             {
@@ -49,6 +49,7 @@ namespace PPAsta.Service.Services.PP.Buyer
             buyersControl.DataContext = viewModel;
 
             // Carica i buyers
+            viewModel.LoadComboBoxYears(year);
             await viewModel.LoadBuyersAsync();
 
             dialog.Content = buyersControl;

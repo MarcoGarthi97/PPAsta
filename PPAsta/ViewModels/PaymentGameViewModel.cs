@@ -4,6 +4,7 @@ using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Services.PP.Buyer;
+using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.Payment;
 using PPAsta.Service.Services.PP.PaymentGame;
 using System;
@@ -18,15 +19,17 @@ namespace PPAsta.ViewModels
 {
     public class PaymentGameViewModel : ObservableObject, IForServiceCollectionExtension
     {
+        private readonly ISrvGameService _gameService;
         private readonly ISrvPaymentGameService _paymentGameService;
         private readonly ISrvBuyerService _buyerService;
         private readonly ISrvPaymentService _paymentService;
 
-        public PaymentGameViewModel(ISrvPaymentGameService paymentGameService, ISrvBuyerService buyerService, ISrvPaymentService paymentService)
+        public PaymentGameViewModel(ISrvPaymentGameService paymentGameService, ISrvBuyerService buyerService, ISrvPaymentService paymentService, ISrvGameService gameService)
         {
             _paymentGameService = paymentGameService;
             _buyerService = buyerService;
             _paymentService = paymentService;
+            _gameService = gameService;
         }
 
         private string _name;
@@ -87,9 +90,11 @@ namespace PPAsta.ViewModels
 
         private SrvBuyer _buyer;
         private int _gameId;
+        private int _year;
         public async Task LoadDataAsync(SrvGameDetail gameDetail)
         {
             _gameId = gameDetail.Id;
+            _year = gameDetail.Year;
 
             Name = gameDetail.Name;
             Owner = gameDetail.Owner;
@@ -168,6 +173,11 @@ namespace PPAsta.ViewModels
                 && ShareOwner != null
                 && SharePP != null
                 && (_buyer != null || !string.IsNullOrEmpty(BuyerName) || !string.IsNullOrEmpty(Number));
+        }
+
+        public int GetYear()
+        {
+            return _year;
         }
     }
 }

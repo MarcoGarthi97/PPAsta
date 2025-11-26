@@ -18,18 +18,28 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Margin="0,0,0,10">
+        <Grid Grid.Row="0" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                <TextBox Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     TextChanged="{x:Bind OnTextChanged, Mode=OneWay}"
-                     Header="Ricerca"
-                     PlaceholderText="Ricerca per nome, numero o anno"
-                     HorizontalAlignment="Stretch" />
-            </StackPanel>
+            <!-- Barra di ricerca -->
+            <TextBox Grid.Column="0"
+                 Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="OnTextChanged"
+                 Header="Ricerca"
+                 PlaceholderText="Ricerca per nome o numero"
+                 Margin="0,0,10,0" />
+
+            <!-- ComboBox filtro -->
+            <ComboBox Grid.Column="1"
+                  Header="Anno"
+                  ItemsSource="{Binding FilterYears}"
+                  SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                  SelectionChanged="ComboBoxYears_SelectionChanged"
+                  PlaceholderText="Seleziona anno"
+                  />
         </Grid>
 
 

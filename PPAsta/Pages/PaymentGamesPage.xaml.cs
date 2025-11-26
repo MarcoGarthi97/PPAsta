@@ -110,7 +110,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyer = await _buyerSelectionService.SelectBuyerAsync(this.XamlRoot);
+                var buyer = await _buyerSelectionService.SelectBuyerAsync(this.XamlRoot, _paymentGameViewModel.GetYear());
 
                 if (buyer != null)
                 {

@@ -24,18 +24,34 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Margin="0,0,0,10">
+        <Grid Grid.Row="0" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                <TextBox Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     TextChanged="{x:Bind OnTextChanged, Mode=OneWay}"
-                     Header="Ricerca"
-                     PlaceholderText="Ricerca proprietario o nome gioco"
-                     HorizontalAlignment="Stretch" />
-            </StackPanel>
+            <TextBox Grid.Column="0"  
+                 Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="{x:Bind OnTextChanged, Mode=OneWay}"
+                 Header="Ricerca"
+                 PlaceholderText="Ricerca proprietario o nome gioco"
+                 Margin="0,0,10,0" />
+
+            <ComboBox Grid.Column="1"
+                  Header="Anno"
+                  ItemsSource="{Binding FilterYears}"
+                  SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                  SelectionChanged="ComboBoxYears_SelectionChanged"
+                  PlaceholderText="Seleziona anno"
+                  />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Button x:Name="ExportButton" 
+            Content="Esporta" 
+            Click="ExportButton_Click"
+            HorizontalAlignment="Right">
+            </Button>
         </Grid>
 
         <controls:DataGrid Grid.Row="2"

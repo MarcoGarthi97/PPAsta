@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Services.PP.Buyer;
+using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,6 +29,8 @@ namespace PPAsta.ViewModels
         public int _count = -1;
 
         public ObservableCollection<SrvBuyer> Buyers { get; } = new ObservableCollection<SrvBuyer>();
+        public ObservableCollection<ComboBoxPP> FilterYears { get; } = new ObservableCollection<ComboBoxPP>();
+
         public BuyerViewModel(ISrvBuyerService buyerService)
         {
             _buyerService = buyerService;
@@ -50,6 +54,46 @@ namespace PPAsta.ViewModels
         {
             get => _pageText;
             set => SetProperty(ref _pageText, value);
+        }
+
+        private ComboBoxPP _selectedFilter;
+        public ComboBoxPP SelectedFilter
+        {
+            get => _selectedFilter;
+            set
+            {
+                _selectedFilter = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public void LoadComboBoxYears(int? year = null)
+        {
+            FilterYears.Clear();
+
+            if (!year.HasValue)
+            {
+                year = SrvAppConfigurationStorage.OldestYear;
+
+                FilterYears.Add(new ComboBoxPP { DisplayName = "", Value = -1 });
+
+                while (year <= DateTime.Now.Year)
+                {
+                    FilterYears.Add(new ComboBoxPP { DisplayName = year.ToString(), Value = year.Value });
+
+                    if (SrvAppConfigurationStorage.InitializeYearNow.IsYearInitialized && SrvAppConfigurationStorage.InitializeYearNow.Year == year)
+                    {
+                        SelectedFilter = FilterYears.FirstOrDefault();
+                    }
+
+                    year++;
+                }                
+            }
+            else
+            {
+                FilterYears.Add(new ComboBoxPP { DisplayName = year.ToString(), Value = year!.Value });
+                SelectedFilter = FilterYears.FirstOrDefault();
+            }
         }
 
         public async Task LoadBuyersAsync()
@@ -83,9 +127,12 @@ namespace PPAsta.ViewModels
 
         private Func<SrvBuyer, bool> BuildPredicate()
         {
-            return e => e.Name.ToLower().Contains(_textResearch.ToLower())
-                        || e.Number.ToString().Contains(_textResearch)
-                        || e.Year.ToString().Contains(_textResearch);
+            return e => (string.IsNullOrEmpty(_textResearch) ||
+                 e.Name.Contains(_textResearch, StringComparison.OrdinalIgnoreCase) ||
+                 e.Number.ToString().Contains(_textResearch)) &&
+                (SelectedFilter == null ||
+                 string.IsNullOrEmpty(SelectedFilter.DisplayName) ||
+                 e.Year.ToString() == SelectedFilter.DisplayName);
         }
 
         public int BuyersCountAsync()

@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Services.PP.Payment;
+using PPAsta.Service.Storages.PP;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,6 +30,7 @@ namespace PPAsta.ViewModels
         public int _count = -1;
 
         public ObservableCollection<SrvPaymentDetail> Payments { get; } = new ObservableCollection<SrvPaymentDetail>();
+        public ObservableCollection<ComboBoxPP> FilterYears { get; } = new ObservableCollection<ComboBoxPP>();
 
         public PaymentViewModel(ISrvPaymentService paymentService)
         {
@@ -52,6 +55,17 @@ namespace PPAsta.ViewModels
             set => SetProperty(ref _pageText, value);
         }
 
+        private ComboBoxPP _selectedFilter;
+        public ComboBoxPP SelectedFilter
+        {
+            get => _selectedFilter;
+            set
+            {
+                _selectedFilter = value;
+                OnPropertyChanged();
+            }
+        }
+
         public async Task LoadPaymentsAsync()
         {
             var paymentsTemp = await GetPaymentsFilteredAsync();
@@ -61,6 +75,7 @@ namespace PPAsta.ViewModels
         public async Task ReloadPaymentsAsync()
         {
             ClearData();
+            LoadComboBoxYear();
 
             await LoadPaymentsAsync();
         }
@@ -68,6 +83,27 @@ namespace PPAsta.ViewModels
         public void ClearData()
         {
             _paymentsList = new List<SrvPaymentDetail>();
+        }
+
+        public void LoadComboBoxYear()
+        {
+            FilterYears.Clear();
+
+            int year = SrvAppConfigurationStorage.OldestYear;
+
+            FilterYears.Add(new ComboBoxPP { DisplayName = "", Value = -1 });
+
+            while (year <= DateTime.Now.Year)
+            {
+                FilterYears.Add(new ComboBoxPP { DisplayName = year.ToString(), Value = year });
+
+                if (SrvAppConfigurationStorage.InitializeYearNow.IsYearInitialized && SrvAppConfigurationStorage.InitializeYearNow.Year == year)
+                {
+                    SelectedFilter = FilterYears.FirstOrDefault();
+                }
+
+                year++;
+            }
         }
 
         private async Task<IEnumerable<SrvPaymentDetail>> GetPaymentsFilteredAsync()
@@ -91,7 +127,11 @@ namespace PPAsta.ViewModels
 
         private Func<SrvPaymentDetail, bool> BuildPredicate()
         {
-            return e => e.BuyerName.ToLower().Contains(_textResearch.ToLower());
+            return e => (string.IsNullOrEmpty(_textResearch)
+                        || e.BuyerName.ToLower().Contains(_textResearch.ToLower()))
+                        && (SelectedFilter == null
+                        || string.IsNullOrEmpty(SelectedFilter.DisplayName)
+                        || e.Year.ToString() == SelectedFilter.DisplayName);
         }
 
         public int PaymentsCountAsync()
