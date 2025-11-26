@@ -15,8 +15,9 @@ namespace PPAsta.Service.Services.PP.Buyer
     {
         Task DeleteBuyerAsync(SrvBuyer buyer);
         Task<List<SrvBuyer>> GetAllBuyersAsync(int? year = null);
-        Task<IEnumerable<SrvBuyer>> GetBuyerAsync(int number, int year);
+        Task<SrvBuyer> GetBuyerByNumberAsync(int number, int year);
         Task<SrvBuyer> GetBuyerByIdAsync(int id);
+        Task<SrvBuyer> GetBuyerByNameAsync(string name, int year);
         List<SrvBuyer> GetContentByCSV(string content);
         Task<int> GetNextNumberByYearAsync(int year);
         Task InsertBuyerAsync(SrvBuyer buyer);
@@ -41,10 +42,16 @@ namespace PPAsta.Service.Services.PP.Buyer
             return _mapper.Map<List<SrvBuyer>>(buyersRepository);
         }
 
-        public async Task<IEnumerable<SrvBuyer>> GetBuyerAsync(int number, int year)
+        public async Task<SrvBuyer> GetBuyerByNumberAsync(int number, int year)
         {
-            var buyersRepository = await _buyerRepository.GetBuyerAsync(number, year);
-            return _mapper.Map<IEnumerable<SrvBuyer>>(buyersRepository);
+            var buyerRepository = await _buyerRepository.GetBuyerByNumberAsync(number, year);
+            return _mapper.Map<SrvBuyer>(buyerRepository);
+        }
+
+        public async Task<SrvBuyer> GetBuyerByNameAsync(string name, int year)
+        {
+            var buyerRepository = await _buyerRepository.GetBuyerByNameAsync(name, year);
+            return _mapper.Map<SrvBuyer>(buyerRepository);
         }
 
         public async Task InsertBuyerAsync(SrvBuyer buyer)

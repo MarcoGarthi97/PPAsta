@@ -146,6 +146,11 @@ namespace PPAsta.ViewModels
 
         public async Task InsertPaymentGameAsync()
         {
+            if (_buyer?.Name != BuyerName || _buyer?.Number.ToString() != Number)
+            {
+                await HandleBuyerAsync();
+            }
+
             var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(_gameId);
 
             var oldBuyerId = paymentGame.BuyerId;
@@ -167,6 +172,45 @@ namespace PPAsta.ViewModels
             await _paymentService.InsertPaymentAsync(paymentGame);
         }
 
+        public async Task HandleBuyerAsync()
+        {
+            SrvBuyer buyer;
+
+            if (_buyer?.Name != BuyerName)
+            {
+                buyer = await _buyerService.GetBuyerByNameAsync(BuyerName, _year);
+                Number = string.Empty;
+            }
+            else
+            {
+                buyer = await _buyerService.GetBuyerByNumberAsync(ConvertNumber(Number), _year);
+            }
+
+            if (buyer == null)
+            {
+                if (string.IsNullOrEmpty(BuyerName))
+                {
+                    throw new Exception("Inserire il nome acquirente");
+                }
+
+                int number = !string.IsNullOrEmpty(Number) ? ConvertNumber(Number) : await _buyerService.GetNextNumberByYearAsync(_year);
+                buyer = new SrvBuyer
+                {
+                    Number = number,
+                    Name = BuyerName,
+                    Year = _year,
+                };
+
+                await _buyerService.InsertBuyerAsync(buyer);
+                buyer = await _buyerService.GetBuyerByNameAsync(BuyerName, _year);
+
+                Number = number.ToString();
+                BuyerName = buyer.Name;
+            }
+
+            _buyer = buyer;
+        }
+
         public bool CheckField()
         {
             return !string.IsNullOrEmpty(PurchasePrice)
@@ -178,6 +222,18 @@ namespace PPAsta.ViewModels
         public int GetYear()
         {
             return _year;
+        }
+
+        private int ConvertNumber(string number)
+        {
+            if (Int32.TryParse(number, out int n))
+            {
+                return n;
+            }
+            else
+            {
+                throw new Exception("Impossibile convertire il campo Numero");
+            }
         }
     }
 }
