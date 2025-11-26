@@ -17,8 +17,9 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
     {
         Task DeleteBuyerAsync(MdlBuyer buyer);
         Task<IEnumerable<MdlBuyer>> GetAllBuyersAsync(int? year = null);
-        Task<IEnumerable<MdlBuyer>> GetBuyerAsync(int number, int year);
+        Task<MdlBuyer> GetBuyerByNumberAsync(int number, int year);
         Task<MdlBuyer> GetBuyerByIdAsync(int id);
+        Task<MdlBuyer> GetBuyerByNameAsync(string name, int year);
         Task<int> GetNextNumberByYearAsync(int year);
         Task InsertBuyerAsync(MdlBuyer buyer);
         Task InsertBuyersAsync(IEnumerable<MdlBuyer> buyers);
@@ -31,14 +32,24 @@ namespace PPAsta.Repository.Services.Repositories.PP.Buyer
         {
         }
 
-        public async Task<IEnumerable<MdlBuyer>> GetBuyerAsync(int number, int year)
+        public async Task<MdlBuyer> GetBuyerByNumberAsync(int number, int year)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
             string sql = $@"SELECT * FROM BUYERS
                 WHERE Number = @number AND Year = @year";
 
-            return await connection.QueryAsync<MdlBuyer>(sql, new { number, year });
+            return await connection.QueryFirstOrDefaultAsync<MdlBuyer>(sql, new { number, year });
+        }
+
+        public async Task<MdlBuyer> GetBuyerByNameAsync(string name, int year)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT * FROM BUYERS
+                WHERE Name = @name AND Year = @year";
+
+            return await connection.QueryFirstOrDefaultAsync<MdlBuyer>(sql, new { name, year });
         }
 
         public async Task<MdlBuyer> GetBuyerByIdAsync(int id)
