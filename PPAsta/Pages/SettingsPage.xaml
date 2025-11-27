@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="PPAsta.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PPAsta.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="20">
+        <TabView>
+            <TabViewItem Header="Applicazione">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel Margin="0,0,0,10" Spacing="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Margin="0,0,0,10" Spacing="5">
+                                <CheckBox Grid.Column="2"
+                                  x:Name="CheckBoxYear"
+                                  IsChecked="{Binding IsYearNow, Mode=TwoWay}"
+                                  VerticalAlignment="Bottom"
+                                  Content="Usa l'anno corrente come filtro di default"
+                                  Margin="10,0,0,0"
+                                  Click="CheckBoxYear_Click" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabViewItem>
+            <TabViewItem Header="Database">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Margin="0,0,0,10" Spacing="5">
+
+                        <TextBlock 
+    Text="Carica i dati"
+    Margin="10,10,10,0"
+    FontWeight="SemiBold" />
+                        <Button
+    Content="Carica dati"
+    Click="LoadDataDatabaseButton_Click"
+    Margin="10,0,10,0"
+    MinWidth="80"
+    HorizontalAlignment="Left" />
+
+                        <TextBox
+        Grid.Column="2"
+        Text="{Binding DatabasePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+        x:Name="DatabasePath"
+        Header="Posizione Database"
+        IsReadOnly="True"/>
+                    </StackPanel>
+                </Grid>
+            </TabViewItem>
+        </TabView>
+    </Grid>
+</Page>

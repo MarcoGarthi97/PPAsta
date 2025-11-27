@@ -20,4 +20,5 @@ namespace PPAsta.Repository.Services.FactorySQL
             _connectionFactory = connectionFactory;
         }
     }
+
 }

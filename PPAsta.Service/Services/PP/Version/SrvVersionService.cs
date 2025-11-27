@@ -11,7 +11,6 @@ namespace PPAsta.Service.Services.PP.Version
 {
     public interface ISrvVersionService : IForServiceCollectionExtension
     {
-        Task CreateTableVersionAsync();
         Task<string> GetVersionAsync();
         Task InsertVersionAsync(string version = "1.0.0");
     }
@@ -25,11 +24,6 @@ namespace PPAsta.Service.Services.PP.Version
         {
             _versionRepository = versionRepository;
             _mapper = mapper;
-        }
-
-        public async Task CreateTableVersionAsync()
-        {
-            await _versionRepository.CreateTableVersionAsync();
         }
 
         public async Task<string> GetVersionAsync()

@@ -29,6 +29,11 @@ using PPAsta.Repository.Services.FactorySQL;
 using PPAsta.Service.Storages.PP;
 using PPAsta.Service.Services.PP.Version;
 using PPAsta.Service.Services.Windows;
+using PPAsta.Migration.Services.Collection;
+using PPAsta.Migration.Services.Orchestrator;
+using PPAsta.Service.Services.PP.Buyer;
+using PPAsta.Service.Services.PP.Game;
+using PPAsta.Service.Services.PP.Helper;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -41,6 +46,7 @@ namespace PPAsta
     public partial class App : Application
     {
         private IHost _host;
+        public static Window? MainWindow { get; private set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -59,7 +65,6 @@ namespace PPAsta
                 })
                 .Build();
 
-            InizializeDatabase().Wait();
 
             InitializeComponent();
         }
@@ -68,27 +73,61 @@ namespace PPAsta
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+
+            await InizializeServiceAsync(_host.Services);
+
             var mainWindowService = _host.Services.GetRequiredService<ISrvMainWindowService>();
-            m_window = new MainWindow(mainWindowService, _host.Services);
-            m_window.Activate();
+            MainWindow = new MainWindow(mainWindowService, _host.Services);
+            //MainWindow.Closed += MainWindow_Closed;
+
+            MainWindow.Closed += (s, e) =>
+            {
+                MainWindow = null;
+                //(_host as IDisposable)?.Dispose();
+            };
+
+            MainWindow.Activate();
         }
 
         private void ConfigureServices(IServiceCollection services, IConfiguration config)
         {
-            services.AddAutoMapper(x => { }, typeof(App).Assembly);
+            services.AddAutoMapper(x => { }, typeof(App), typeof(SrvVersionService));
 
             services.AddSharedLibrary();
             services.AddSharedLibraryServices();
             services.AddSharedLibraryRepositories();
+            services.AddSharedLibraryMigrations();
 
             string dbPath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "app.db");
             var connectionString = $"Data Source={dbPath}";
             services.AddSingleton<IDatabaseConnectionFactory>(provider =>
                 new MdlSqliteConnectionFactory(connectionString));
+        }
 
-            LoadConfigurations(config);
+        private async Task InizializeServiceAsync(IServiceProvider services)
+        {
+            await InizializeDatabase();
+
+            var migrationService = services.GetRequiredService<IMigrationOrchestrator>();
+            await migrationService.ExecuteMigrationAsync();
+
+            await LoadConfigurationsAsync(services);
+        }
+
+        private async Task LoadConfigurationsAsync(IServiceProvider services)
+        {
+            SrvAppConfigurationStorage.SetDatabaseExist();
+
+            var gameService = services.GetRequiredService<ISrvGameService>();
+            SrvAppConfigurationStorage.SetOldestYear(await gameService.GetOldestYearAsync());
+
+            var helperService = services.GetRequiredService<ISrvHelperService>();
+            var helperInitializeYear = await helperService.GetHelperByKeyAsync("InitializeYear");
+            SrvAppConfigurationStorage.SetInitializeYearNow(helperInitializeYear?.Json);
         }
 
         private async Task InizializeDatabase()
@@ -106,10 +145,9 @@ namespace PPAsta
             RepositoryCollectionExtension.ConfigurationDatabase();
         }
 
-        private void LoadConfigurations(IConfiguration config)
+        private void MainWindow_Closed(object sender, WindowEventArgs args)
         {
+            MainWindow = null;
         }
-
-        private Window? m_window;
     }
 }

@@ -25,17 +25,9 @@ namespace PPAsta.Repository.Services.FactorySQL
 
         public async Task<SqliteConnection> CreateConnectionAsync()
         {
-            if (_connection == null)
-            {
-                _connection = new SqliteConnection(_connectionString);
-                await _connection.OpenAsync();
-            }
-            else if (_connection.State != System.Data.ConnectionState.Open)
-            {
-                await _connection.OpenAsync();
-            }
-
-            return _connection;
+            var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+            return connection;
         }
 
         public void Dispose()

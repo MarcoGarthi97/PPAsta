@@ -5,15 +5,32 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PPAsta"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:muxc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     mc:Ignorable="d"
     Title="PPAsta">
 
-    <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+    <muxc:NavigationView
+    x:Name="NavView"
+    IsPaneOpen="False"
+    IsBackButtonVisible="Collapsed"
+    PaneDisplayMode="Left"
+    IsSettingsVisible="False"
+    PaneTitle="PPAsta Menu"
+    ItemInvoked="NavView_ItemInvoked">
 
-    <Grid>
+        <muxc:NavigationView.MenuItems>
+            <muxc:NavigationViewItem Content="Giochi" Icon="Shop" Tag="gamesPage"/>
+            <muxc:NavigationViewItem Content="Pagamenti" Tag="paymentsPage">
+                <muxc:NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xe8c7;" />
+                </muxc:NavigationViewItem.Icon>
+            </muxc:NavigationViewItem>
+            <muxc:NavigationViewItem Content="Acquirenti" Icon="People" Tag="buyersPage"/>
+            <muxc:NavigationViewItem Content="Settings" Icon="Setting" Tag="settingsPage"/>
+        </muxc:NavigationView.MenuItems>
 
-    </Grid>
+        <Frame x:Name="ContentFrame">
+        </Frame>
+    </muxc:NavigationView>
 </Window>

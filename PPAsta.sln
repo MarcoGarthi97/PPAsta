@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPAsta", "PPAsta\PPAsta.csproj", "{F450CAA1-2ED9-4FC9-8C0D-1C9A7932BE33}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPAsta.Repository", "PPAsta.Repository\PPAsta.Repository.csproj", "{E5954EA6-E051-46A5-813E-70E51537C538}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPAsta.Abstraction", "PPAsta.Abstraction\PPAsta.Abstraction.csproj", "{E99DCE3B-5267-445E-A2E7-E27405BF0274}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPAsta.Migration", "PPAsta.Migration\PPAsta.Migration.csproj", "{60EEC7FE-7561-462C-A68B-5ACDC4A48140}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,18 @@ Global
 		{E99DCE3B-5267-445E-A2E7-E27405BF0274}.Release|x64.Build.0 = Release|Any CPU
 		{E99DCE3B-5267-445E-A2E7-E27405BF0274}.Release|x86.ActiveCfg = Release|Any CPU
 		{E99DCE3B-5267-445E-A2E7-E27405BF0274}.Release|x86.Build.0 = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|x64.Build.0 = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Debug|x86.Build.0 = Debug|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|ARM64.Build.0 = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|x64.ActiveCfg = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|x64.Build.0 = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|x86.ActiveCfg = Release|Any CPU
+		{60EEC7FE-7561-462C-A68B-5ACDC4A48140}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
