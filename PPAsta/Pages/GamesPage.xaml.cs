@@ -23,6 +23,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.System;
 
@@ -150,7 +152,36 @@ namespace PPAsta.Pages
         {
             try
             {
+                var picker = new FileSavePicker();
 
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+                WinRT.Interop.InitializeWithWindow.Initialize(picker, hWnd);
+
+                // Dove iniziare
+                picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+
+                // Estensioni possibili
+                picker.FileTypeChoices.Add("CSV file", new List<string>() { ".csv" });
+
+                // Nome suggerito
+                picker.SuggestedFileName = "export";
+
+                StorageFile file = await picker.PickSaveFileAsync();
+
+                if (file != null)
+                {
+                    _gameViewModel.CreateCsvGameDetails(file.Path);
+
+                    var dialog = new ContentDialog
+                    {
+                        Title = "Salvataggio",
+                        Content = "File salvato con successo.",
+                        CloseButtonText = "OK",
+                        XamlRoot = this.XamlRoot
+                    };
+
+                    await ShowDialogSafeAsync(dialog);
+                }
             }
             catch (Exception ex)
             {
