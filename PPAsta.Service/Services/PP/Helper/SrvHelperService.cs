@@ -14,7 +14,7 @@ namespace PPAsta.Service.Services.PP.Helper
     public interface ISrvHelperService : IForServiceCollectionExtension
     {
         Task<SrvHelper> GetHelperByKeyAsync(string key);
-        Task InsertHelpersAsync(IEnumerable<MdlHelper> helpers);
+        Task InsertHelpersAsync(IEnumerable<SrvHelper> helpers);
         Task UpdateHelperAsync(SrvHelper helper);
     }
     public class SrvHelperService : ISrvHelperService
@@ -41,15 +41,23 @@ namespace PPAsta.Service.Services.PP.Helper
             }
         }
 
-        public async Task InsertHelpersAsync(IEnumerable<MdlHelper> helpers)
+        public async Task InsertHelpersAsync(IEnumerable<SrvHelper> helpers)
         {
             var helpersRepository = _mapper.Map<IEnumerable<MdlHelper>>(helpers);
+            foreach (var helper in helpersRepository)
+            {
+                helper.RCD = DateTime.Now;
+                helper.RUD = DateTime.Now;
+            }
+
             await _helperRepository.InsertHelpersAsync(helpersRepository);
         }
 
         public async Task UpdateHelperAsync(SrvHelper helper)
         {
             var helperRepository = _mapper.Map<MdlHelper>(helper);
+            helperRepository.RUD = DateTime.Now;
+
             await _helperRepository.UpdateHelperByKeyAsync(helperRepository);
         }
     }

@@ -116,7 +116,7 @@ namespace PPAsta.ViewModels
 
                 if (SrvAppConfigurationStorage.InitializeYearNow.IsYearInitialized && SrvAppConfigurationStorage.InitializeYearNow.Year == year)
                 {
-                    SelectedFilter = FilterYears.FirstOrDefault();
+                    SelectedFilter = FilterYears.FirstOrDefault(x => x.Value == year);
                 }
 
                 year++;
