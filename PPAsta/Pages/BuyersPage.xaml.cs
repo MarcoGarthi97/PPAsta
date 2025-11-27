@@ -112,6 +112,7 @@ namespace PPAsta.Pages
         {
             try
             {
+                _buyerViewModel = (BuyerViewModel)DataContext;
                 await _buyerViewModel.LoadBuyersAsync();
             }
             catch (Exception ex)
