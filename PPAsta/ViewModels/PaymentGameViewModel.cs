@@ -128,7 +128,7 @@ namespace PPAsta.ViewModels
         public void CalculateShares(int value)
         {
             double sharePP = (double)value / 10;
-            int integerSharePP = (int)Math.Round(sharePP);
+            double integerSharePP = Math.Round(sharePP, 2);
 
             SharePP = integerSharePP;
             ShareOwner = value - integerSharePP;

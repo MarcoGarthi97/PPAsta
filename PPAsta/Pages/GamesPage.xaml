@@ -28,23 +28,32 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0"  
-                 Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="{x:Bind OnTextChanged, Mode=OneWay}"
-                 Header="Ricerca"
-                 PlaceholderText="Ricerca proprietario o nome gioco"
-                 Margin="0,0,10,0" />
+            <TextBox Grid.Column="0"
+             Text="{Binding TextResearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+             TextChanged="{x:Bind OnTextChanged, Mode=OneWay}"
+             Header="Ricerca"
+             PlaceholderText="Ricerca proprietario o nome gioco"
+             Margin="0,0,10,0" />
 
             <ComboBox Grid.Column="1"
-                  Header="Anno"
-                  ItemsSource="{Binding FilterYears}"
-                  SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
-                  SelectionChanged="ComboBoxYears_SelectionChanged"
-                  PlaceholderText="Seleziona anno"
-                  />
+              Header="Anno"
+              ItemsSource="{Binding FilterYears}"
+              SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+              SelectionChanged="ComboBoxYears_SelectionChanged"
+              PlaceholderText="Seleziona anno" />
+
+            <CheckBox Grid.Column="2"
+              x:Name="CheckBoxVisibility"
+              IsChecked="{Binding IsVisible, Mode=TwoWay}"
+              VerticalAlignment="Bottom"
+              Content="Rendi visibili solo quelli non venduti"
+              Margin="10,0,0,0"
+              Click="CheckBoxIsVisible_Click" />
         </Grid>
+
 
         <Grid Grid.Row="1" Margin="0,0,0,10">
             <Button x:Name="ExportButton" 

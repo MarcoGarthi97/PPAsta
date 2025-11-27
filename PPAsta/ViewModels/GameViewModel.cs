@@ -61,6 +61,13 @@ namespace PPAsta.ViewModels
             set => SetProperty(ref _pageText, value);
         }
 
+        private bool _isVisible;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
+        }
+
         private ComboBoxPP _selectedFilter;
         public ComboBoxPP SelectedFilter
         {
@@ -89,6 +96,7 @@ namespace PPAsta.ViewModels
         public void ClearData()
         {
             _gamesList = new List<SrvGameDetail>();
+            TextResearch = string.Empty;
         }
 
         public void LoadComboBoxYear()
@@ -136,6 +144,7 @@ namespace PPAsta.ViewModels
             return e => (string.IsNullOrEmpty(_textResearch) 
                         || e.Name.ToLower().Contains(_textResearch.ToLower())
                         || e.Owner.ToLower().Contains(_textResearch.ToLower()))
+                        && (!IsVisible || e.PaymentProcess == Abstraction.Models.Enums.PaymentGameProcess.Insert)
                         && (SelectedFilter == null 
                         || string.IsNullOrEmpty(SelectedFilter.DisplayName) 
                         || e.Year.ToString() == SelectedFilter.DisplayName);

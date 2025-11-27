@@ -83,6 +83,7 @@ namespace PPAsta.ViewModels
         public void ClearData()
         {
             _paymentsList = new List<SrvPaymentDetail>();
+            TextResearch = string.Empty;
         }
 
         public void LoadComboBoxYear()
