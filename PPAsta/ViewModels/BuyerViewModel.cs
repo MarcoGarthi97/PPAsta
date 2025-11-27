@@ -67,6 +67,13 @@ namespace PPAsta.ViewModels
             }
         }
 
+        public void ClearComponents()
+        {
+            FilterYears.Clear();
+            Buyers.Clear();
+            _buyersList.Clear();
+        }
+
         public void LoadComboBoxYears(int? year = null)
         {
             FilterYears.Clear();

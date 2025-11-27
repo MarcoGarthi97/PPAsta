@@ -176,15 +176,7 @@ namespace PPAsta.ViewModels
         {
             SrvBuyer buyer;
 
-            if (_buyer?.Name != BuyerName)
-            {
-                buyer = await _buyerService.GetBuyerByNameAsync(BuyerName, _year);
-                Number = string.Empty;
-            }
-            else
-            {
-                buyer = await _buyerService.GetBuyerByNumberAsync(ConvertNumber(Number), _year);
-            }
+            buyer = await _buyerService.GetBuyerByNumberAsync(ConvertNumber(Number), _year);
 
             if (buyer == null)
             {
@@ -207,7 +199,11 @@ namespace PPAsta.ViewModels
                 Number = number.ToString();
                 BuyerName = buyer.Name;
             }
-
+            else if (buyer.Name != BuyerName)
+            {
+                throw new Exception("Numero o nome acquirente errati");
+            }
+            
             _buyer = buyer;
         }
 
