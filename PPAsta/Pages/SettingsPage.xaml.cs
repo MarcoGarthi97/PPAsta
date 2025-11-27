@@ -39,6 +39,13 @@ namespace PPAsta.Pages
             this.DataContext = settingViewModel;
             _logger = logger;
             _settingViewModel = (SettingViewModel)DataContext;
+
+            LoadComponents();
+        }
+
+        private async void LoadComponents()
+        {
+            await _settingViewModel.GetInitializeYearNowAsync();
         }
 
         private async void LoadDataDatabaseButton_Click(object sender, RoutedEventArgs e)
@@ -191,6 +198,19 @@ namespace PPAsta.Pages
             };
 
             await ShowDialogSafeAsync(dialog);
+        }
+
+        private async void CheckBoxYear_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await _settingViewModel.InitializeYearNowAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
         }
 
         private async Task ExceptionDialogAsync(Exception ex)

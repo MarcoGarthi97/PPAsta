@@ -106,8 +106,6 @@ namespace PPAsta
             var connectionString = $"Data Source={dbPath}";
             services.AddSingleton<IDatabaseConnectionFactory>(provider =>
                 new MdlSqliteConnectionFactory(connectionString));
-
-            LoadConfigurations(config);
         }
 
         private async Task InizializeServiceAsync(IServiceProvider services)
@@ -145,10 +143,6 @@ namespace PPAsta
         private void ConfigurationDatabase()
         {
             RepositoryCollectionExtension.ConfigurationDatabase();
-        }
-
-        private void LoadConfigurations(IConfiguration config)
-        {
         }
 
         private void MainWindow_Closed(object sender, WindowEventArgs args)
