@@ -85,6 +85,19 @@ namespace PPAsta.Pages
             ShowDatabaseNotFoundAlertAsync();
         }
 
+        private async void CheckBoxIsVisible_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LoadGamesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
         private async void ShowDatabaseNotFoundAlertAsync()
         {
             var dialog = new ContentDialog

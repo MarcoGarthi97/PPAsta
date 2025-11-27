@@ -76,7 +76,7 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
 
-                <controls:DataGridTemplateColumn Header="Modifica">
+                <controls:DataGridTemplateColumn Header="Elimina">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button
