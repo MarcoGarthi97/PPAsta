@@ -5,6 +5,7 @@ using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Models.PP.PaymentGame;
+using PPAsta.Service.Services.PP.Export;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.PaymentGame;
 using PPAsta.Service.Storages.PP;
@@ -21,6 +22,7 @@ namespace PPAsta.ViewModels
     {
         private readonly ISrvGameService _gameService;
         private readonly ISrvPaymentGameService _paymentGameService;
+        private readonly ISrvExportCsvService _exportCsvService;
 
         private string _textResearch = "";
         private string? _totalRecordsText;
@@ -35,12 +37,13 @@ namespace PPAsta.ViewModels
         public ObservableCollection<SrvGameDetail> Games { get; } = new ObservableCollection<SrvGameDetail>();
         public ObservableCollection<ComboBoxPP> FilterYears { get; } = new ObservableCollection<ComboBoxPP>();
 
-        public GameViewModel(ISrvGameService gameService, ISrvPaymentGameService paymentGameService)
+        public GameViewModel(ISrvGameService gameService, ISrvPaymentGameService paymentGameService, ISrvExportCsvService exportCsvService)
         {
             _gameService = gameService;
             _paymentGameService = paymentGameService;
 
             LoadGamesCommand = new AsyncRelayCommand(LoadGamesAsync);
+            _exportCsvService = exportCsvService;
         }
 
         public string? TextResearch
@@ -256,6 +259,17 @@ namespace PPAsta.ViewModels
         public async Task InsertCardPaymentGameAsync(SrvPaymentGame payment)
         {
             await _paymentGameService.InsertPaymentGameAsync(payment);
+        }
+
+        public void CreateCsvGameDetails(string path)
+        {
+            var predicate = BuildPredicate();
+            var gamesTemp = _gamesList.Where(predicate).ToList();
+
+            if (gamesTemp.Any())
+            {
+                _exportCsvService.ExportCsvGameDetails(gamesTemp, path);
+            }
         }
     }
 }
