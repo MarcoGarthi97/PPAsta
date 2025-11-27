@@ -57,6 +57,7 @@ namespace PPAsta.Pages
         {
             if (SrvAppConfigurationStorage.DatabaseConfiguration.DatabaseExists)
             {
+                _buyerViewModel.ClearComponents();
                 _buyerViewModel.LoadComboBoxYears();
                 LoadBuyersAsync();
                 BuyersCount();
@@ -111,8 +112,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyerViewModel = (BuyerViewModel)DataContext;
-                await buyerViewModel.LoadBuyersAsync();
+                await _buyerViewModel.LoadBuyersAsync();
             }
             catch (Exception ex)
             {
@@ -125,8 +125,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyerViewModel = (BuyerViewModel)DataContext;
-                await buyerViewModel.PrevButton();
+                await _buyerViewModel.PrevButton();
             }
             catch (Exception ex)
             {
@@ -139,8 +138,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyerViewModel = (BuyerViewModel)DataContext;
-                await buyerViewModel.NextButton();
+                await _buyerViewModel.NextButton();
             }
             catch (Exception ex)
             {
@@ -153,8 +151,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyerViewModel = (BuyerViewModel)DataContext;
-                await buyerViewModel.LoadBuyersAsync();
+                await _buyerViewModel.LoadBuyersAsync();
 
                 string propertyName = e.Column.Tag?.ToString();
 
@@ -171,7 +168,7 @@ namespace PPAsta.Pages
                         }
                     }
 
-                    await buyerViewModel.DataSortAsync(propertyName, isAscending);
+                    await _buyerViewModel.DataSortAsync(propertyName, isAscending);
                 }
             }
             catch (Exception ex)
@@ -211,8 +208,8 @@ namespace PPAsta.Pages
         {
             try
             {
-                var buyerViewModel = (BuyerViewModel)DataContext;
-                buyerViewModel.BuyersCountAsync();
+                var _buyerViewModel = (BuyerViewModel)DataContext;
+                _buyerViewModel.BuyersCountAsync();
             }
             catch (Exception ex)
             {
