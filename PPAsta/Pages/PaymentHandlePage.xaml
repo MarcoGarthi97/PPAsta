@@ -14,6 +14,7 @@
 
     <Page.Resources>
         <converters:PaymentGameProcessToBrushConverter x:Key="PaymentGameProcessToBrushConverter"/>
+        <converters:PaymentTypeEnumToTextConverter x:Key="PaymentTypeConverter"/>
     </Page.Resources>
 
     <Grid Padding="20">
@@ -160,7 +161,10 @@
                 <controls:DataGridTextColumn Header="Proprietario" Tag="Owner" Binding="{Binding Owner}" />
                 <controls:DataGridTextColumn Header="Prezzo di vendita" Tag="SellingPrice" Binding="{Binding SellingPrice}" />
                 <controls:DataGridTextColumn Header="Prezzo d'acquisto" Tag="PurchasePrice" Binding="{Binding PurchasePrice}" />
-                <controls:DataGridTextColumn Header="Tipo pagamento" Tag="PaymentType" Binding="{Binding PaymentType}" />
+                <controls:DataGridTextColumn 
+                    Header="Tipo pagamento" 
+                    Tag="PaymentType" 
+                    Binding="{Binding PaymentType, Converter={StaticResource PaymentTypeConverter}}" />
                 <controls:DataGridTemplateColumn Header="Rimuovi pagamento">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
