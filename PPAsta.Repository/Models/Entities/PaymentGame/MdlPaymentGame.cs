@@ -2,6 +2,7 @@
 using PPAsta.Abstraction.Models.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace PPAsta.Repository.Models.Entities.PaymentGame
     [Table("PAYMENTGAMES")]
     public class MdlPaymentGame : MdlFieldsDB
     {
+        [Key]
         [Column("ID")]
         public int Id { get; set; }
         [Column("GameID")]

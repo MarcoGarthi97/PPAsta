@@ -385,7 +385,7 @@ namespace PPAsta.ViewModels
                 }
 
                 await _paymentService.UpdatePaymentAsync(payment);
-                await _paymentService.CalculatedPaymentsAsync(_buyerId);
+                await _paymentService.HandlePaymentAsync(_buyerId);
             }
             else
             {

@@ -146,6 +146,21 @@ namespace PPAsta.Pages
             }
         }
 
+        private async void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var textBox = sender as TextBox;
+                
+                await _paymentGameViewModel.GetBuyerByNumberAsync(textBox?.Text);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                await ExceptionDialogAsync(ex);
+            }
+        }
+
         private async Task SaveDialog()
         {
             var dialog = new ContentDialog
