@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Repository.Models.Entities.Payment;
 using PPAsta.Repository.Services.Repositories.PP.Payment;
@@ -15,7 +16,7 @@ namespace PPAsta.Service.Services.PP.Payment
 {
     public interface ISrvPaymentService : IForServiceCollectionExtension
     {
-        Task CalculatedPaymentsAsync(int buyerId);
+        Task HandlePaymentAsync(int buyerId);
         Task DeletePaymentAsync(SrvPayment Payment);
         Task DeletePaymentByBuyerIdsAsync(IEnumerable<int> ids);
         Task<IEnumerable<SrvPaymentDetail>> GetAllPaymentDetailsAsync();
@@ -110,7 +111,7 @@ namespace PPAsta.Service.Services.PP.Payment
             }
             else
             {
-                await CalculatedPaymentsAsync(oldBuyerId);
+                await HandlePaymentAsync(oldBuyerId);
             }
         }
 
@@ -126,31 +127,60 @@ namespace PPAsta.Service.Services.PP.Payment
             }
             else
             {
-                await CalculatedPaymentsAsync(paymentGame.BuyerId.Value);
+                await HandlePaymentAsync(paymentGame.BuyerId.Value);
             }
         }
 
-        public async Task CalculatedPaymentsAsync(int buyerId)
+        public async Task HandlePaymentAsync(int buyerId)
         {
             var paymentGames = await _paymentGameService.GetAllPaymentGamesByBuyerIdAsync(buyerId);
             if (paymentGames.Any())
             {
                 var paymentRepository = await _paymentRepository.GetPaymentByBuyerIdAsync(buyerId);
-                paymentRepository.TotalPurchasePrice = 0;
-                paymentRepository.TotalShareOwner = 0;
-                paymentRepository.TotalSharePP = 0;
-
-                foreach (var paymentGame in paymentGames)
+                if (paymentRepository != null)
                 {
-                    paymentRepository.TotalPurchasePrice += paymentGame.PurchasePrice.Value;
-                    paymentRepository.TotalShareOwner += paymentGame.ShareOwner.Value;
-                    paymentRepository.TotalSharePP += paymentGame.SharePP.Value;
+                    paymentRepository = CalculatedPayments(paymentRepository, paymentGames);
+                    paymentRepository.PaymentProcess = GetPaymentProcess(paymentGames);
+
+                    paymentRepository.RUD = DateTime.Now;
+
+                    await _paymentRepository.UpdatePaymentAsync(paymentRepository);
                 }
+            }               
+        }
 
-                paymentRepository.RUD = DateTime.Now;
+        private PaymentProcess GetPaymentProcess(IEnumerable<SrvPaymentGame> paymentGames)
+        {
+            var gamesNotPayed = paymentGames.Where(x => x.PaymentProcess == PaymentGameProcess.ToBePaid);
 
-                await _paymentRepository.UpdatePaymentAsync(paymentRepository);
+            if (gamesNotPayed.Any() && gamesNotPayed.Count() == paymentGames.Count())
+            {
+                return PaymentProcess.ToBePaid;
             }
+            else if (gamesNotPayed.Any())
+            {
+                return PaymentProcess.NotFullyPaid;
+            }
+            else
+            {
+                return PaymentProcess.Paid;
+            }
+        }
+
+        private MdlPayment CalculatedPayments(MdlPayment paymentRepository, IEnumerable<SrvPaymentGame> paymentGames)
+        {
+            paymentRepository.TotalPurchasePrice = 0;
+            paymentRepository.TotalShareOwner = 0;
+            paymentRepository.TotalSharePP = 0;
+
+            foreach (var paymentGame in paymentGames)
+            {
+                paymentRepository.TotalPurchasePrice += paymentGame.PurchasePrice.Value;
+                paymentRepository.TotalShareOwner += paymentGame.ShareOwner.Value;
+                paymentRepository.TotalSharePP += paymentGame.SharePP.Value;
+            }
+
+            return paymentRepository;
         }
     }
 }
