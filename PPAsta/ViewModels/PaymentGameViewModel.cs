@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Gaming.Input;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PPAsta.ViewModels
 {
@@ -142,6 +143,20 @@ namespace PPAsta.ViewModels
             Number = "";
 
             CalculateShares(0);
+        }
+
+        public async Task GetBuyerByNumberAsync(string number)
+        {
+            if (Int32.TryParse(number, out int n))
+            {
+                var buyer = await _buyerService.GetBuyerByNumberAsync(n, _year);
+
+                BuyerName = buyer?.Name;
+            }
+            else if (string.IsNullOrEmpty(number))
+            {
+                BuyerName = "";
+            }
         }
 
         public async Task InsertPaymentGameAsync()
