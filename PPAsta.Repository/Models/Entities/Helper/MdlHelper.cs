@@ -12,6 +12,7 @@ namespace PPAsta.Repository.Models.Entities.Helper
     [Table("HELPERS")]
     public class MdlHelper : MdlFieldsDB
     {
+        [Key]
         [Column("Id")]
         public int Id { get; set; }
         [Key]

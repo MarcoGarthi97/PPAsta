@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Gaming.Input;
-using Z.Dapper.Plus;
+
 
 namespace PPAsta.Repository.Services.Repositories.PP.PaymentGame
 {
