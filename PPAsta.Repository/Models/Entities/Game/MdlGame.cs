@@ -9,6 +9,7 @@ namespace PPAsta.Repository.Models.Entities.Game
     [Table("GAMES")]
     public class MdlGame : MdlFieldsDB
     {
+        [Key]
         [Column("ID")]
         public int Id { get; set; }
         [Column("Name")]

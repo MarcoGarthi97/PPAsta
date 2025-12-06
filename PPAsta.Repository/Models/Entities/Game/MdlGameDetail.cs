@@ -1,5 +1,6 @@
 ﻿using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PPAsta.Repository.Models.Entities.Game
@@ -7,6 +8,7 @@ namespace PPAsta.Repository.Models.Entities.Game
     [Table("GAMES")]
     public class MdlGameDetail : MdlFieldsDB
     {
+        [Key]
         [Column("ID")]
         public int Id { get; set; }
         [Column("Name")]

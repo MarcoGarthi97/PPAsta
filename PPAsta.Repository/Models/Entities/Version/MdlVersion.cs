@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace PPAsta.Repository.Models.Entities.Version
     [Table("VERSION")]
     public class MdlVersion
     {
+        [Key]
         [Column("Version")]
         public string Version { get; set; }
         [Column("Rud")]

@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Z.Dapper.Plus;
+
 
 namespace PPAsta.Repository.Services.Repositories.PP.Buyer
 {
