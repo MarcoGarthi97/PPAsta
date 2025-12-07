@@ -78,19 +78,26 @@ namespace PPAsta
             var services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            await InizializeServiceAsync(_host.Services);
-
-            var mainWindowService = _host.Services.GetRequiredService<ISrvMainWindowService>();
-            MainWindow = new MainWindow(mainWindowService, _host.Services);
-            //MainWindow.Closed += MainWindow_Closed;
-
-            MainWindow.Closed += (s, e) =>
+            try
             {
-                MainWindow = null;
-                //(_host as IDisposable)?.Dispose();
-            };
+                await InizializeServiceAsync(_host.Services);
 
-            MainWindow.Activate();
+                var mainWindowService = _host.Services.GetRequiredService<ISrvMainWindowService>();
+                MainWindow = new MainWindow(mainWindowService, _host.Services);
+                //MainWindow.Closed += MainWindow_Closed;
+
+                MainWindow.Closed += (s, e) =>
+                {
+                    MainWindow = null;
+                    //(_host as IDisposable)?.Dispose();
+                };
+
+                MainWindow.Activate();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private void ConfigureServices(IServiceCollection services, IConfiguration config)
@@ -102,10 +109,31 @@ namespace PPAsta
             services.AddSharedLibraryRepositories();
             services.AddSharedLibraryMigrations();
 
-            string dbPath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "app.db");
+            //string dbPath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "app.db");
+            string dbPath = GetPathDB();
             var connectionString = $"Data Source={dbPath}";
             services.AddSingleton<IDatabaseConnectionFactory>(provider =>
                 new MdlSqliteConnectionFactory(connectionString));
+        }
+
+        private string GetPathDB()
+        {
+            string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            // 2. Definisci una sottocartella specifica per la tua applicazione (usa un nome unico, ad es. "PPAsta")
+            string appFolderName = "PPAsta";
+            string appDataPath = System.IO.Path.Combine(localAppDataPath, appFolderName);
+
+            // 3. Verifica e crea la cartella se non esiste
+            if (!Directory.Exists(appDataPath))
+            {
+                Directory.CreateDirectory(appDataPath);
+            }
+
+            // 4. Combina il percorso della cartella con il nome del file DB
+            string dbPath = System.IO.Path.Combine(appDataPath, "app.db");
+
+            return dbPath;
         }
 
         private async Task InizializeServiceAsync(IServiceProvider services)
@@ -132,10 +160,16 @@ namespace PPAsta
 
         private async Task InizializeDatabase()
         {
-            var path = ApplicationData.Current.LocalFolder;
-            await ApplicationData.Current.LocalFolder.CreateFileAsync("app.db", CreationCollisionOption.OpenIfExists);
+            string dbFilePath = GetPathDB();
 
-            SrvAppConfigurationStorage.SetDatabasePath(path.Path);
+            if (!File.Exists(dbFilePath))
+            {
+                using (var stream = File.Create(dbFilePath))
+                {
+                }
+            }
+
+            SrvAppConfigurationStorage.SetDatabasePath(System.IO.Path.GetDirectoryName(dbFilePath));
 
             ConfigurationDatabase();
         }

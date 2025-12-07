@@ -3,8 +3,9 @@
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>PPAsta.Repository</RootNamespace>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UseWinUI>true</UseWinUI>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
