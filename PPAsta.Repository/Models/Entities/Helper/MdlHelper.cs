@@ -15,7 +15,6 @@ namespace PPAsta.Repository.Models.Entities.Helper
         [Key]
         [Column("Id")]
         public int Id { get; set; }
-        [Key]
         [Column("Key")]
         public string Key { get; set; }
         [Column("Json")]

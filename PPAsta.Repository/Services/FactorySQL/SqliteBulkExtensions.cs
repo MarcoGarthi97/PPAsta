@@ -63,7 +63,7 @@ namespace PPAsta.Repository.Services.FactorySQL
 
                 await transaction.CommitAsync();
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 throw;
