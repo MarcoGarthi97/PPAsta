@@ -78,61 +78,25 @@ namespace PPAsta.Service.Services.PP.Spreadsheet
 
         private IEnumerable<SrvPaymentGame> BuildPayments(IEnumerable<SrvGame> games, IEnumerable<SrvSpreadsheet> rows)
         {
-            Dictionary<string, List<decimal>> dictRows = new Dictionary<string, List<decimal>>();
+            var gamesLookup = games.ToLookup(g => $"{g.Name}-{g.Owner}");
 
-            foreach (var x in rows)
-            {
-                decimal price = 1;
-
-                if (x.Prezzo.HasValue)
+            return rows
+                .Select(row => new
                 {
-                    price = x.Prezzo.Value / 100;
-                }
-
-                if (dictRows.ContainsKey(x.NomeGioco + "-" + x.Proprietario))
+                    Key = $"{row.NomeGioco}-{row.Proprietario}",
+                    Price = row.Prezzo.GetValueOrDefault(100) / 100m,
+                    Row = row
+                })
+                .Where(x => gamesLookup.Contains(x.Key))
+                .Select(x => new SrvPaymentGame
                 {
-                    dictRows[x.NomeGioco + "-" + x.Proprietario].Add(price);
-                }
-                else
-                {
-                    dictRows.Add(x.NomeGioco + "-" + x.Proprietario, new List<decimal> { price });
-                }
-            }
-
-            Dictionary<string, List<int>> dictGames = new Dictionary<string, List<int>>();
-
-            foreach (var x in games)
-            {
-                if (dictGames.ContainsKey(x.Name + "-" + x.Owner))
-                {
-                    dictGames[x.Name + "-" + x.Owner].Add(x.Id);
-                }
-                else
-                {
-                    dictGames.Add(x.Name + "-" + x.Owner, new List<int> { x.Id });
-                }
-            }
-
-            var payments = new List<SrvPaymentGame>();
-
-            foreach (var x in games)
-            {
-                if (dictRows.ContainsKey(x.Name + "-" + x.Owner) && dictGames.ContainsKey(x.Name + "-" + x.Owner))
-                {
-                    payments.Add(new SrvPaymentGame
-                    {
-                        GameId = dictGames[x.Name + "-" + x.Owner].First(),
-                        SellingPrice = dictRows[x.Name + "-" + x.Owner].First(),
-                        PaymentProcess = PaymentGameProcess.Insert
-                    });
-
-                    dictGames[x.Name + "-" + x.Owner].RemoveAt(0);
-                    //dictRows[x.Name + "-" + x.Owner].RemoveAt(0);
-                }
-            }
-
-            return payments;
+                    GameId = gamesLookup[x.Key].First().Id,
+                    SellingPrice = x.Price,
+                    PaymentProcess = PaymentGameProcess.Insert
+                })
+                .ToList();
         }
+
 
         private IEnumerable<SrvSpreadsheet> GetSpreadsheetAsync(string csvData)
         {
