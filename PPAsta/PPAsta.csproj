@@ -21,6 +21,7 @@
     <None Remove="Control\BuyersControl.xaml" />
     <None Remove="Pages\PaymentHandlePage.xaml" />
     <None Remove="Pages\PaymentsPage.xaml" />
+    <None Remove="Pages\SellersPage.xaml" />
     <None Remove="Pages\SettingsPage.xaml" />
   </ItemGroup>
 
@@ -58,6 +59,11 @@
     <ProjectReference Include="..\PPAsta.Abstraction\PPAsta.Abstraction.csproj" />
     <ProjectReference Include="..\PPAsta.Migration\PPAsta.Migration.csproj" />
     <ProjectReference Include="..\PPAsta.Service\PPAsta.Service.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SellersPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\PaymentHandlePage.xaml">
