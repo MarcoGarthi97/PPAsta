@@ -261,14 +261,15 @@ namespace PPAsta.ViewModels
             await _paymentGameService.InsertPaymentGameAsync(payment);
         }
 
-        public void CreateCsvGameDetails(string path)
+        public async Task CreateCsvGameDetails(string path)
         {
             var predicate = BuildPredicate();
             var gamesTemp = _gamesList.Where(predicate).ToList();
+            var data = await _exportCsvService.GetDataForExportByGameIdsAsync(gamesTemp.Select(x => x.Id));
 
-            if (gamesTemp.Any())
+            if (data.Any())
             {
-                _exportCsvService.ExportCsvGameDetails(gamesTemp, path);
+                _exportCsvService.ExportCsvGameDetails(data, path);
             }
         }
     }

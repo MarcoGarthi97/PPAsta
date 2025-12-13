@@ -19,6 +19,7 @@ namespace PPAsta.Service.Services.PP.Seller
     public interface ISrvSellerService : IForServiceCollectionExtension
     {
         Task DeleteSellerByPayementGameIdAsync(int paymentGameId);
+        Task DeleteSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds);
         Task<IEnumerable<SrvSellerDetail>> GetAllSellersAsync();
         Task<IEnumerable<SrvSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds);
         Task<SrvSellerDetail> GetSellerByPayementGameIdAsync(int paymentGameId);
@@ -112,6 +113,11 @@ namespace PPAsta.Service.Services.PP.Seller
         public async Task DeleteSellerByPayementGameIdAsync(int paymentGameId)
         {
             await _sellerRepository.DeleteSellerByPayementGameIdAsync(paymentGameId);
+        }
+
+        public async Task DeleteSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds)
+        {
+            await _sellerRepository.DeleteSellerByPayementGameIdsAsync(paymentGameIds);
         }
     }
 }

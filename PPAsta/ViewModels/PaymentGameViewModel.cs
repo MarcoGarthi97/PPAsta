@@ -113,6 +113,15 @@ namespace PPAsta.ViewModels
 
                 await LoadBuyerAsync(paymentGame.BuyerId.Value);
             }
+            else
+            {
+                PurchasePrice = null;
+                SharePP = null;
+                ShareOwner = null;
+
+                BuyerName = null;
+                Number = null;
+            }
         }
 
         private async Task LoadBuyerAsync(int buyerId)

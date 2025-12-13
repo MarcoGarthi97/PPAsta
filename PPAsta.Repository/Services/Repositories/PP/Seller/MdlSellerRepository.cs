@@ -17,6 +17,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Seller
     public interface IMdlSellerRepository : IForServiceCollectionExtension
     {
         Task DeleteSellerByPayementGameIdAsync(int payementGameId);
+        Task DeleteSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds);
         Task<IEnumerable<MdlSellerCheck>> GetAllSellersCheckAsync();
         Task<IEnumerable<MdlSellerDetail>> GetAllSellersDetailAsync();
         Task<IEnumerable<MdlSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds);
@@ -115,13 +116,22 @@ namespace PPAsta.Repository.Services.Repositories.PP.Seller
             await connection.BulkUpdateAsync(sellers);
         }
 
-        public async Task DeleteSellerByPayementGameIdAsync(int payementGameId)
+        public async Task DeleteSellerByPayementGameIdAsync(int paymentGameId)
         {
             var connection = await _connectionFactory.CreateConnectionAsync();
 
-            string sql = $@"DELETE FROM SELLERS WHERE PayementGameID = @payementGameId";
+            string sql = $@"DELETE FROM SELLERS WHERE PaymentGameID = @paymentGameId";
 
-            await connection.ExecuteAsync(sql, new { payementGameId });
+            await connection.ExecuteAsync(sql, new { paymentGameId });
+        }
+
+        public async Task DeleteSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"DELETE FROM SELLERS WHERE PaymentGameID in @paymentGameIds";
+
+            await connection.ExecuteAsync(sql, new { paymentGameIds });
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
 using PPAsta.Service.Models.PP.Payment;
 using PPAsta.Service.Storages.PP;
@@ -20,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Payments;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -130,13 +132,39 @@ namespace PPAsta.Pages
                 if (button?.Tag != null)
                 {
                     var paymentDetail = button.Tag as SrvGameDetail;
-                    await _paymentHandleViewModel.DeletePaymentAsync(paymentDetail!);
+                    await OpenDeletePaymentDialogAsync(paymentDetail!);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
                 await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async Task OpenDeletePaymentDialogAsync(SrvGameDetail paymentDetail)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Elimina Pagamento",
+                PrimaryButtonText = "Conferma",
+                CloseButtonText = "Annulla",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = "Sei sicuro di voler eliminare il record selezionato?" }
+                    }
+                }
+            };
+
+            var result = await ShowDialogSafeAsync(dialog);
+
+            if (result == ContentDialogResult.Primary)
+            {
+                await _paymentHandleViewModel.DeletePaymentAsync(paymentDetail!);
             }
         }
 
@@ -149,13 +177,39 @@ namespace PPAsta.Pages
                 if (button?.Tag != null)
                 {
                     var paymentDetail = button.Tag as SrvGameDetail;
-                    await _paymentHandleViewModel.RemoveGameFromBuyerAsync(paymentDetail!);
+                    await OpenRemoveGameDialogAsync(paymentDetail!);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
                 await ExceptionDialogAsync(ex);
+            }
+        }
+
+        private async Task OpenRemoveGameDialogAsync(SrvGameDetail paymentDetail)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Rimuovi gioco",
+                PrimaryButtonText = "Conferma",
+                CloseButtonText = "Annulla",
+                XamlRoot = XamlRoot,
+                Content = new StackPanel
+                {
+                    Spacing = 10,
+                    Children =
+                    {
+                        new TextBlock { Text = "Sei sicuro di voler eliminare il record selezionato?" }
+                    }
+                }
+            };
+
+            var result = await ShowDialogSafeAsync(dialog);
+
+            if (result == ContentDialogResult.Primary)
+            {
+                await _paymentHandleViewModel.RemoveGameFromBuyerAsync(paymentDetail!);
             }
         }
 
