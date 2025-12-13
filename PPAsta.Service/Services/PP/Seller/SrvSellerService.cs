@@ -4,6 +4,7 @@ using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Repository.Models.Entities.Seller;
 using PPAsta.Repository.Services.Repositories.PP.Seller;
+using PPAsta.Service.Models.PP.PaymentGame;
 using PPAsta.Service.Models.PP.Seller;
 using PPAsta.Service.Services.PP.Helper;
 using System;
@@ -19,6 +20,7 @@ namespace PPAsta.Service.Services.PP.Seller
     {
         Task DeleteSellerByPayementGameIdAsync(int paymentGameId);
         Task<IEnumerable<SrvSellerDetail>> GetAllSellersAsync();
+        Task<IEnumerable<SrvSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds);
         Task<SrvSellerDetail> GetSellerByPayementGameIdAsync(int paymentGameId);
         Task<IEnumerable<SrvSeller>> GetSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds);
         Task InsertSellerAsync(int paymentGameId, int year);
@@ -77,6 +79,12 @@ namespace PPAsta.Service.Services.PP.Seller
         public async Task<IEnumerable<SrvSeller>> GetSellerByPayementGameIdsAsync(IEnumerable<int> paymentGameIds)
         {
             var sellerRepository = await _sellerRepository.GetSellerByPayementGameIdsAsync(paymentGameIds);
+            return _mapper.Map<IEnumerable<SrvSeller>>(sellerRepository);
+        }
+
+        public async Task<IEnumerable<SrvSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var sellerRepository = await _sellerRepository.GetSellerByGameIdsAsync(gameIds);
             return _mapper.Map<IEnumerable<SrvSeller>>(sellerRepository);
         }
 

@@ -13,7 +13,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <converters:PaymentGameProcessToBrushConverter x:Key="PaymentGameProcessToBrushConverter"/>
+        <converters:SellerProcessToBrushConverter x:Key="SellerProcessToBrushConverter"/>
         <converters:PaymentTypeEnumToTextConverter x:Key="PaymentTypeConverter"/>
     </Page.Resources>
 
@@ -54,8 +54,8 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Spacing="4">
-                        <TextBlock Text="Compratore" FontWeight="SemiBold" FontSize="14"/>
-                        <TextBox Text="{Binding Buyer, Mode=OneWay}"
+                        <TextBlock Text="Venditore" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBox Text="{Binding Owner, Mode=OneWay}"
                              IsReadOnly="True"
                              Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
                     </StackPanel>
@@ -144,11 +144,11 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
 
-                <controls:DataGridTemplateColumn Header="Processo" Tag="PaymentProcess">
+                <controls:DataGridTemplateColumn Header="Processo" Tag="PaymentSellerProcess">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Ellipse Width="16" Height="16"
-                                 Fill="{Binding PaymentProcess, Converter={StaticResource PaymentGameProcessToBrushConverter}}"
+                                 Fill="{Binding PaymentSellerProcess, Converter={StaticResource SellerProcessToBrushConverter}}"
                                  Stroke="Black"
                                  StrokeThickness="0.5"
                                  HorizontalAlignment="Center"
@@ -160,7 +160,7 @@
                 <controls:DataGridTextColumn Header="Nome" Tag="Name" Binding="{Binding Name}" />
                 <controls:DataGridTextColumn Header="Proprietario" Tag="Owner" Binding="{Binding Owner}" />
                 <controls:DataGridTextColumn Header="Prezzo di vendita" Tag="SellingPrice" Binding="{Binding SellingPrice}" />
-                <controls:DataGridTextColumn Header="Prezzo d'acquisto" Tag="PurchasePrice" Binding="{Binding PurchasePrice}" />
+                <controls:DataGridTextColumn Header="Quota proprietario" Tag="ShareOwner" Binding="{Binding ShareOwner}" />
                 <controls:DataGridTextColumn 
                 Header="Tipo pagamento" 
                 Tag="PaymentType" 
@@ -178,20 +178,6 @@
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Rimuovi Gioco">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button 
-                            Click="DeleteGameButton_Click"
-                            Tag="{Binding}"
-                            Margin="5"
-                            MinWidth="80">
-                                <FontIcon Glyph="&#xe74d;" />
-                            </Button>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 

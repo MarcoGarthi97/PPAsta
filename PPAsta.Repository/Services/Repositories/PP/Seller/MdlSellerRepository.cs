@@ -2,6 +2,7 @@
 using Dapper.Contrib.Extensions;
 using Microsoft.UI.Xaml;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Repository.Models.Entities.PaymentGame;
 using PPAsta.Repository.Models.Entities.Seller;
 using PPAsta.Repository.Services.FactorySQL;
 using PPAsta.Repository.Services.Repositories.PP.Helper;
@@ -18,6 +19,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Seller
         Task DeleteSellerByPayementGameIdAsync(int payementGameId);
         Task<IEnumerable<MdlSellerCheck>> GetAllSellersCheckAsync();
         Task<IEnumerable<MdlSellerDetail>> GetAllSellersDetailAsync();
+        Task<IEnumerable<MdlSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds);
         Task<MdlSellerDetail> GetSellerByPayementGameIdAsync(int payementGameId);
         Task<IEnumerable<MdlSeller>> GetSellerByPayementGameIdsAsync(IEnumerable<int> payementGameIds);
         Task InsertSeller(MdlSeller seller);
@@ -88,6 +90,17 @@ namespace PPAsta.Repository.Services.Repositories.PP.Seller
             string sql = $@"SELECT * FROM SELLERS WHERE PaymentGameID in @payementGameIds";
 
             return await connection.QueryAsync<MdlSeller>(sql, new { payementGameIds });
+        }
+
+        public async Task<IEnumerable<MdlSeller>> GetSellerByGameIdsAsync(IEnumerable<int> gameIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = $@"SELECT S.* FROM SELLERS S
+                JOIN PAYMENTGAMES P ON S.PaymentGameID = P.ID
+                WHERE GameID in @gameIds";
+
+            return await connection.QueryAsync<MdlSeller>(sql, new { gameIds });
         }
 
         public async Task InsertSeller(MdlSeller seller)

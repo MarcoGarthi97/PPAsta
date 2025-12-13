@@ -18,7 +18,7 @@ namespace PPAsta.Service.Services.Mapper
 
             CreateMap<SrvGameDetail, MdlGameDetail>().ReverseMap();
 
-            CreateMap<SrvSellerGameDetail, SrvSellerGameDetail>().ReverseMap();
+            CreateMap<SrvSellerGameDetail, MdlSellerGameDetail>().ReverseMap();
 
             CreateMap<SrvSpreadsheet, SrvGame>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(from => from.NomeGioco))
