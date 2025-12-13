@@ -2,6 +2,7 @@
 using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Logging;
 using PPAsta.Abstraction.Models.Interfaces;
+using PPAsta.Repository.Models.Entities.Export;
 using PPAsta.Repository.Models.Entities.Game;
 using PPAsta.Repository.Services.FactorySQL;
 using System;
@@ -25,6 +26,8 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
         Task UpdateGameAsync(MdlGame game);
         Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
         Task<int> GetOldestYearAsync();
+        Task<IEnumerable<MdlSellerGameDetail>> GetAllSellerGameDetailsByOwnerAsync(string owner, int year);
+        Task<IEnumerable<MdlExportCsv>> GetDataForExportByGameIdsAsync(IEnumerable<int> gamesIds);
     }
 
     public class MdlGameRepository : BaseRepository<MdlGame>, IMdlGameRepository
@@ -89,6 +92,38 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             ";
 
             return await connection.QueryAsync<MdlGameDetail>(sql, new { buyerId });
+        }
+
+        public async Task<IEnumerable<MdlSellerGameDetail>> GetAllSellerGameDetailsByOwnerAsync(string owner, int year)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = @$"
+                SELECT G.*, P.SellingPrice, P.PurchasePrice, P.ShareOwner, P.SharePP, B.Name AS Buyer, S.PaymentSellerProcess, S.PaymentType  
+                FROM GAMES G
+                JOIN PAYMENTGAMES P ON G.ID = P.GameID 
+                LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
+                JOIN SELLERS S ON S.PaymentGameID = P.ID
+                WHERE G.Owner = @owner AND G.Year = @year 
+            ";
+
+            return await connection.QueryAsync<MdlSellerGameDetail>(sql, new { owner, year });
+        }
+
+        public async Task<IEnumerable<MdlExportCsv>> GetDataForExportByGameIdsAsync(IEnumerable<int> gamesIds)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = @$"
+                SELECT G.*, P.PaymentProcess, P.PaymentType, P.SellingPrice, P.PurchasePrice, P.ShareOwner, P.SharePP, B.Name AS Buyer, S.PaymentSellerProcess AS PaymentSellerProcess, S.PaymentType AS PaymentTypeForSeller 
+                FROM GAMES G
+                JOIN PAYMENTGAMES P ON G.ID = P.GameID 
+                LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
+                LEFT JOIN SELLERS S ON S.PaymentGameID = P.ID
+                WHERE G.ID IN @gamesIds
+            ";
+
+            return await connection.QueryAsync<MdlExportCsv>(sql, new { gamesIds });
         }
 
         public async Task DeleteGameByYearsAsync(IEnumerable<int> years)

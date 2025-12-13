@@ -74,6 +74,9 @@ namespace PPAsta
                     case "buyersPage":
                         _navigationService.NavigateTo<BuyersPage>("");
                         break;
+                    case "sellersPage":
+                        _navigationService.NavigateTo<SellersPage>("");
+                        break;
                     case "paymentsPage":
                         _navigationService.NavigateTo<PaymentsPage>("");
                         break;
@@ -81,20 +84,6 @@ namespace PPAsta
                         _navigationService.NavigateTo<SettingsPage>("");
                         break;
                 }
-            }
-        }
-
-        private async Task LoadConfigurationsAsync()
-        {
-            try
-            {
-                // TODO: Da fare
-                //var helperService = _serviceProvider.GetRequiredService<ISrvHelperService>();
-                //await helperService.LoadConfigurationAsync();
-            }
-            catch (Exception ex)
-            {
-                //await ShowErrorAlertAsync(ex);
             }
         }
 
