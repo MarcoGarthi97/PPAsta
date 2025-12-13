@@ -25,6 +25,7 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
         Task UpdateGameAsync(MdlGame game);
         Task<IEnumerable<MdlGameDetail>> GetAllGameDetailsByBuyerIdAsync(int buyerId);
         Task<int> GetOldestYearAsync();
+        Task<IEnumerable<MdlSellerGameDetail>> GetAllSellerGameDetailsByOwnerAsync(string owner, int year);
     }
 
     public class MdlGameRepository : BaseRepository<MdlGame>, IMdlGameRepository
@@ -89,6 +90,22 @@ namespace PPAsta.Repository.Services.Repositories.PP.Game
             ";
 
             return await connection.QueryAsync<MdlGameDetail>(sql, new { buyerId });
+        }
+
+        public async Task<IEnumerable<MdlSellerGameDetail>> GetAllSellerGameDetailsByOwnerAsync(string owner, int year)
+        {
+            var connection = await _connectionFactory.CreateConnectionAsync();
+
+            string sql = @$"
+                SELECT G.*, P.SellingPrice, P.PurchasePrice, P.ShareOwner, P.SharePP, B.Name AS Buyer, S.PaymentSellerProcess, S.PaymentType  
+                FROM GAMES G
+                JOIN PAYMENTGAMES P ON G.ID = P.GameID 
+                LEFT JOIN BUYERS B ON B.ID = P.BuyerID 
+                JOIN SELLERS S ON S.PaymentGameID = P.ID
+                WHERE G.Owner = @owner AND G.Year = @year 
+            ";
+
+            return await connection.QueryAsync<MdlSellerGameDetail>(sql, new { owner, year });
         }
 
         public async Task DeleteGameByYearsAsync(IEnumerable<int> years)
