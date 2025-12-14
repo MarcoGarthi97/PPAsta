@@ -9,7 +9,8 @@
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls" 
     xmlns:numberformatting="using:Windows.Globalization.NumberFormatting"
     mc:Ignorable="d"
-    xmlns:converters="using:PPAsta.Converters">
+    xmlns:converters="using:PPAsta.Converters"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <converters:SellerProcessToBrushConverter x:Key="SellerProcessToBrushConverter"/>
@@ -65,10 +66,10 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
                 <controls:DataGridTextColumn Header="Venditore" Tag="Owner" Binding="{Binding Owner}" />
-                <controls:DataGridTextColumn Header="Quota Proprietari" Tag="TotalShareOwner" Binding="{Binding TotalShareOwner}" />
+                <controls:DataGridTextColumn Header="Quota proprietari" Tag="TotalShareOwner" Binding="{Binding TotalShareOwner}" />
                 <controls:DataGridTextColumn Header="Quota PP" Tag="TotalSharePP" Binding="{Binding TotalSharePP}" />
-                <controls:DataGridTextColumn Header="Totale Giochi" Tag="TotalGames" Binding="{Binding TotalGames}" />
-                <controls:DataGridTextColumn Header="Totale Giochi" Tag="TotalGamesSold" Binding="{Binding TotalGamesSold}" />
+                <controls:DataGridTextColumn Header="Totale giochi" Tag="TotalGames" Binding="{Binding TotalGames}" />
+                <controls:DataGridTextColumn Header="Giochi venduti" Tag="TotalGamesSold" Binding="{Binding TotalGamesSold}" />
                 <controls:DataGridTextColumn Header="Anno" Tag="Year" Binding="{Binding Year}" />
                 <controls:DataGridTemplateColumn Header="Pagamento">
                     <controls:DataGridTemplateColumn.CellTemplate>

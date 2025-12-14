@@ -155,7 +155,7 @@ namespace PPAsta.Pages
                     Spacing = 10,
                     Children =
                     {
-                        new TextBlock { Text = "Sei sicuro di voler eliminare il record selezionato?" }
+                        new TextBlock { Text = "Sei sicuro di voler eliminare il pagamento?" }
                     }
                 }
             };

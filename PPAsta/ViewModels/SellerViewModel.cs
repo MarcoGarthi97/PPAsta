@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Payments;
 
 namespace PPAsta.ViewModels
 {
@@ -190,6 +191,11 @@ namespace PPAsta.ViewModels
                     sellersTemp = isAscending
                         ? sellersTemp.OrderBy(x => x.Owner).ToList()
                         : sellersTemp.OrderByDescending(x => x.Owner).ToList();
+                    break;
+                case "PaymentSellerProcess":
+                    sellersTemp = isAscending
+                        ? sellersTemp.OrderBy(x => x.PaymentSellerProcess).ToList()
+                        : sellersTemp.OrderByDescending(x => x.PaymentSellerProcess).ToList();
                     break;
                 case "TotalShareOwner":
                     sellersTemp = isAscending

@@ -37,7 +37,7 @@
                 <FontIcon Glyph="&#xE72B;" FontSize="18"/>
             </Button>
 
-            <TextBlock Text="Dettagli Pagamento Gioco"
+            <TextBlock Text="Dettagli Pagamento"
                    FontSize="22"
                    FontWeight="SemiBold"
                    VerticalAlignment="Center"/>
