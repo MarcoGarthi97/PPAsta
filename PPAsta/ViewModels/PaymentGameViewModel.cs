@@ -7,6 +7,7 @@ using PPAsta.Service.Services.PP.Buyer;
 using PPAsta.Service.Services.PP.Game;
 using PPAsta.Service.Services.PP.Payment;
 using PPAsta.Service.Services.PP.PaymentGame;
+using PPAsta.Service.Services.PP.Seller;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,13 +25,15 @@ namespace PPAsta.ViewModels
         private readonly ISrvPaymentGameService _paymentGameService;
         private readonly ISrvBuyerService _buyerService;
         private readonly ISrvPaymentService _paymentService;
+        private readonly ISrvSellerService _sellerService;
 
-        public PaymentGameViewModel(ISrvPaymentGameService paymentGameService, ISrvBuyerService buyerService, ISrvPaymentService paymentService, ISrvGameService gameService)
+        public PaymentGameViewModel(ISrvPaymentGameService paymentGameService, ISrvBuyerService buyerService, ISrvPaymentService paymentService, ISrvGameService gameService, ISrvSellerService sellerService)
         {
             _paymentGameService = paymentGameService;
             _buyerService = buyerService;
             _paymentService = paymentService;
             _gameService = gameService;
+            _sellerService = sellerService;
         }
 
         private string _name;
@@ -110,6 +113,15 @@ namespace PPAsta.ViewModels
 
                 await LoadBuyerAsync(paymentGame.BuyerId.Value);
             }
+            else
+            {
+                PurchasePrice = null;
+                SharePP = null;
+                ShareOwner = null;
+
+                BuyerName = null;
+                Number = null;
+            }
         }
 
         private async Task LoadBuyerAsync(int buyerId)
@@ -185,6 +197,8 @@ namespace PPAsta.ViewModels
             }
 
             await _paymentService.InsertPaymentAsync(paymentGame);
+
+            await _sellerService.InsertSellerAsync(paymentGame.Id, _year);
         }
 
         public async Task HandleBuyerAsync()

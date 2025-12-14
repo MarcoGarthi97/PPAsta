@@ -9,10 +9,8 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PPAsta.Abstraction.Models.Entities;
 using PPAsta.Abstraction.Models.Interfaces;
-using PPAsta.Service.Models.PP.Buyer;
 using PPAsta.Service.Models.PP.Game;
-using PPAsta.Service.Models.PP.Payment;
-using PPAsta.Service.Storages.PP;
+using PPAsta.Service.Models.PP.Seller;
 using PPAsta.Services.Navigation;
 using PPAsta.ViewModels;
 using System;
@@ -21,7 +19,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Payments;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
@@ -33,19 +30,19 @@ namespace PPAsta.Pages
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PaymentHandlePage : Page, IForServiceCollectionExtension, INavigationAware
+    public sealed partial class SellerHandlePage : Page, IForServiceCollectionExtension, INavigationAware
     {
-        private readonly ILogger<PaymentHandlePage> _logger;
-        private readonly PaymentHandleViewModel _paymentHandleViewModel;
+        private readonly ILogger<SellerHandlePage> _logger;
+        private readonly SellerHandleViewModel _sellerHandleViewModel;
         private readonly INavigationService _navigationService;
 
         private ContentDialog _currentDialog;
 
-        public PaymentHandlePage(ILogger<PaymentHandlePage> logger, PaymentHandleViewModel paymentHandleViewModel, INavigationService navigationService)
+        public SellerHandlePage(ILogger<SellerHandlePage> logger, SellerHandleViewModel sellerHandleViewModel, INavigationService navigationService)
         {
             _logger = logger;
-            this.DataContext = paymentHandleViewModel;
-            _paymentHandleViewModel = (PaymentHandleViewModel)this.DataContext;
+            this.DataContext = sellerHandleViewModel;
+            _sellerHandleViewModel = (SellerHandleViewModel)this.DataContext;
             _navigationService = navigationService;
 
             InitializeComponent();
@@ -57,9 +54,9 @@ namespace PPAsta.Pages
 
             while (element != null)
             {
-                if (element.DataContext is SrvGameDetail gameDetail)
+                if (element.DataContext is SrvSellerGameDetail sellerGameDetail)
                 {
-                    gameDetail.IsSelected = gameDetail.IsSelected ? false : true;
+                    sellerGameDetail.IsSelected = sellerGameDetail.IsSelected ? false : true;
                 }
 
                 element = VisualTreeHelper.GetParent(element) as FrameworkElement;
@@ -70,9 +67,9 @@ namespace PPAsta.Pages
         {
             try
             {
-                if (parameter is SrvPaymentDetail dto)
+                if (parameter is SrvSellerDetail dto)
                 {
-                    await _paymentHandleViewModel.LoadDataAsync(dto);
+                    await _sellerHandleViewModel.LoadDataAsync(dto);
                     GamesCount();
                 }
             }
@@ -114,7 +111,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                await _paymentHandleViewModel.LoadGamesAsync();
+                await _sellerHandleViewModel.LoadGamesAsync();
             }
             catch (Exception ex)
             {
@@ -131,85 +128,14 @@ namespace PPAsta.Pages
 
                 if (button?.Tag != null)
                 {
-                    var paymentDetail = button.Tag as SrvGameDetail;
-                    await OpenDeletePaymentDialogAsync(paymentDetail!);
+                    var sellerDetail = button.Tag as SrvSellerGameDetail;
+                    await _sellerHandleViewModel.DeletePaymentSellerAsync(sellerDetail!);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
                 await ExceptionDialogAsync(ex);
-            }
-        }
-
-        private async Task OpenDeletePaymentDialogAsync(SrvGameDetail paymentDetail)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = "Elimina Pagamento",
-                PrimaryButtonText = "Conferma",
-                CloseButtonText = "Annulla",
-                XamlRoot = XamlRoot,
-                Content = new StackPanel
-                {
-                    Spacing = 10,
-                    Children =
-                    {
-                        new TextBlock { Text = "Sei sicuro di voler eliminare il pagamento?" }
-                    }
-                }
-            };
-
-            var result = await ShowDialogSafeAsync(dialog);
-
-            if (result == ContentDialogResult.Primary)
-            {
-                await _paymentHandleViewModel.DeletePaymentAsync(paymentDetail!);
-            }
-        }
-
-        private async void DeleteGameButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var button = sender as Button;
-
-                if (button?.Tag != null)
-                {
-                    var paymentDetail = button.Tag as SrvGameDetail;
-                    await OpenRemoveGameDialogAsync(paymentDetail!);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                await ExceptionDialogAsync(ex);
-            }
-        }
-
-        private async Task OpenRemoveGameDialogAsync(SrvGameDetail paymentDetail)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = "Rimuovi gioco",
-                PrimaryButtonText = "Conferma",
-                CloseButtonText = "Annulla",
-                XamlRoot = XamlRoot,
-                Content = new StackPanel
-                {
-                    Spacing = 10,
-                    Children =
-                    {
-                        new TextBlock { Text = "Sei sicuro di voler eliminare il record selezionato?" }
-                    }
-                }
-            };
-
-            var result = await ShowDialogSafeAsync(dialog);
-
-            if (result == ContentDialogResult.Primary)
-            {
-                await _paymentHandleViewModel.RemoveGameFromBuyerAsync(paymentDetail!);
             }
         }
 
@@ -217,7 +143,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                _paymentHandleViewModel.CheckAll();
+                _sellerHandleViewModel.CheckAll();
             }
             catch (Exception ex)
             {
@@ -230,7 +156,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                await _paymentHandleViewModel.PrevButton();
+                await _sellerHandleViewModel.PrevButton();
             }
             catch (Exception ex)
             {
@@ -243,7 +169,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                await _paymentHandleViewModel.NextButton();
+                await _sellerHandleViewModel.NextButton();
             }
             catch (Exception ex)
             {
@@ -256,7 +182,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                await _paymentHandleViewModel.LoadGamesAsync();
+                await _sellerHandleViewModel.LoadGamesAsync();
 
                 string propertyName = e.Column.Tag?.ToString();
 
@@ -273,7 +199,7 @@ namespace PPAsta.Pages
                         }
                     }
 
-                    await _paymentHandleViewModel.DataSortAsync(propertyName, isAscending);
+                    await _sellerHandleViewModel.DataSortAsync(propertyName, isAscending);
                 }
             }
             catch (Exception ex)
@@ -284,10 +210,10 @@ namespace PPAsta.Pages
         }
 
         private async void PaymentButton_Click(object sender, RoutedEventArgs e)
-        {            
+        {
             try
             {
-                int? total = _paymentHandleViewModel.GetTotalGamesChecked();
+                decimal? total = _sellerHandleViewModel.GetTotalGamesChecked();
                 if (!total.HasValue)
                 {
                     return;
@@ -307,19 +233,19 @@ namespace PPAsta.Pages
                 };
                 dialogContent.Children.Add(totalTextBox);
 
-                ComboBox paymentMethodComboBox = new ComboBox
+                ComboBox sellerMethodComboBox = new ComboBox
                 {
                     Header = "Metodo di pagamento",
                     PlaceholderText = "Seleziona metodo",
                     Width = 300
                 };
 
-                paymentMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Contanti", Value = 0 });
-                paymentMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "PayPal", Value = 1 });
-                paymentMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Bonifico", Value = 2 });
-                paymentMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Altro", Value = 3 });
+                sellerMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Contanti", Value = 0 });
+                sellerMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "PayPal", Value = 1 });
+                sellerMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Bonifico", Value = 2 });
+                sellerMethodComboBox.Items.Add(new ComboBoxPP { DisplayName = "Altro", Value = 3 });
 
-                dialogContent.Children.Add(paymentMethodComboBox);
+                dialogContent.Children.Add(sellerMethodComboBox);
 
                 ContentDialog dialog = new ContentDialog
                 {
@@ -335,14 +261,14 @@ namespace PPAsta.Pages
 
                 if (result == ContentDialogResult.Primary)
                 {
-                    var selectedMethod = paymentMethodComboBox.SelectedItem as ComboBoxPP;
+                    var selectedMethod = sellerMethodComboBox.SelectedItem as ComboBoxPP;
 
                     if (selectedMethod == null)
                     {
                         return;
                     }
 
-                    await _paymentHandleViewModel.PaymentGamesAsync(selectedMethod.Value);
+                    await _sellerHandleViewModel.PaymentSellerAsync(selectedMethod.Value);
                 }
             }
             catch (Exception ex)
@@ -369,7 +295,7 @@ namespace PPAsta.Pages
         {
             try
             {
-                _paymentHandleViewModel.GamesCountAsync();
+                _sellerHandleViewModel.GamesCountAsync();
             }
             catch (Exception ex)
             {
@@ -382,8 +308,8 @@ namespace PPAsta.Pages
         {
             try
             {
-                _paymentHandleViewModel.ClearData();
-                _navigationService.NavigateTo<PaymentsPage>("");
+                _sellerHandleViewModel.ClearData();
+                _navigationService.NavigateTo<SellersPage>("");
             }
             catch (Exception ex)
             {
@@ -434,3 +360,4 @@ namespace PPAsta.Pages
         }
     }
 }
+

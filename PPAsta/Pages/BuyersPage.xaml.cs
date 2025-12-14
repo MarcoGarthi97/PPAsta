@@ -334,8 +334,14 @@ namespace PPAsta.Pages
 
             string title = "Aggiungi compratore";
 
+            string nameBuyerTemp = "";
+            string numberBuyerTemp = "";
+
             if (buyer != null)
             {
+                nameBuyerTemp = buyer.Name.ToString();
+                numberBuyerTemp = buyer.Number.ToString();
+
                 nameBox.Text = buyer.Name;
                 numberBox.Text = buyer.Number.ToString();
                 yearBox.Text = buyer.Year.ToString();
@@ -388,7 +394,10 @@ namespace PPAsta.Pages
                 if (buyer != null)
                 {
                     buyerTemp.Id = buyer.Id;
-                    await _buyerViewModel.UpdateBuyerAsync(buyerTemp);
+
+                    bool force = buyerTemp.Name != nameBuyerTemp && buyerTemp.Number.ToString() == numberBuyerTemp;
+
+                    await _buyerViewModel.UpdateBuyerAsync(buyerTemp, force);
                 }
                 else
                 {

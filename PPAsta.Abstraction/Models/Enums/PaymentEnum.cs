@@ -20,6 +20,13 @@ namespace PPAsta.Abstraction.Models.Enums
         Paid = 2
     }
 
+    public enum PaymentSellerProcess
+    {
+        NotPaid = 0,
+        PaidByBuyer = 1,
+        PaidToSeller = 2
+    }
+
     public enum PaymentType
     {
         Cash = 0,

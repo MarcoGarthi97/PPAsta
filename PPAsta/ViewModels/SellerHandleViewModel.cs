@@ -2,10 +2,8 @@
 using PPAsta.Abstraction.Models.Enums;
 using PPAsta.Abstraction.Models.Interfaces;
 using PPAsta.Service.Models.PP.Game;
-using PPAsta.Service.Models.PP.Payment;
+using PPAsta.Service.Models.PP.Seller;
 using PPAsta.Service.Services.PP.Game;
-using PPAsta.Service.Services.PP.Payment;
-using PPAsta.Service.Services.PP.PaymentGame;
 using PPAsta.Service.Services.PP.Seller;
 using System;
 using System.Collections.Generic;
@@ -13,28 +11,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Payments;
 
 namespace PPAsta.ViewModels
 {
-    public class PaymentHandleViewModel : ObservableObject, IForServiceCollectionExtension
+    public class SellerHandleViewModel : ObservableObject, IForServiceCollectionExtension
     {
         private readonly ISrvGameService _gameService;
-        private readonly ISrvPaymentGameService _paymentGameService;
-        private readonly ISrvPaymentService _paymentService;
         private readonly ISrvSellerService _sellerService;
 
-        public PaymentHandleViewModel(ISrvGameService gameService, ISrvPaymentGameService paymentGameService, ISrvPaymentService paymentService, ISrvSellerService sellerService)
+        public SellerHandleViewModel(ISrvGameService gameService, ISrvSellerService sellerService)
         {
             _gameService = gameService;
-            _paymentGameService = paymentGameService;
-            _paymentService = paymentService;
             _sellerService = sellerService;
         }
 
-        private IEnumerable<SrvGameDetail> _gamesList = new List<SrvGameDetail>();
-        public ObservableCollection<SrvGameDetail> Games { get; } = new ObservableCollection<SrvGameDetail>();
-        public List<SrvGameDetail> SelectedGames { get; } = new();
+        private IEnumerable<SrvSellerGameDetail> _gamesList = new List<SrvSellerGameDetail>();
+        public ObservableCollection<SrvSellerGameDetail> Games { get; } = new ObservableCollection<SrvSellerGameDetail>();
+        public List<SrvSellerGameDetail> SelectedGames { get; } = new();
 
         private bool _isSelected;
         public bool IsSelected
@@ -43,11 +36,11 @@ namespace PPAsta.ViewModels
             set => SetProperty(ref _isSelected!, value);
         }
 
-        private string _buyer = "";
-        public string? Buyer
+        private string _owner = "";
+        public string? Owner
         {
-            get => _buyer;
-            set => SetProperty(ref _buyer!, value);
+            get => _owner;
+            set => SetProperty(ref _owner!, value);
         }
 
         private string? _year;
@@ -90,15 +83,14 @@ namespace PPAsta.ViewModels
 
         int _buyerId;
 
-        public async Task LoadDataAsync(SrvPaymentDetail paymentDetail)
+        public async Task LoadDataAsync(SrvSellerDetail sellerDetail)
         {
             ClearData();
 
-            Buyer = paymentDetail.BuyerName;
-            Year = paymentDetail.Year.ToString();
-            TotalPrice = paymentDetail.TotalPurchasePrice.ToString();
+            Owner = sellerDetail.Owner;
+            Year = sellerDetail.Year.ToString();
+            TotalPrice = sellerDetail.TotalShareOwner.ToString();
 
-            _buyerId = paymentDetail.BuyerId;
 
             await LoadGamesAsync();
         }
@@ -108,18 +100,18 @@ namespace PPAsta.ViewModels
             TextResearch = string.Empty;
             TotalRecordsText = string.Empty;
             PageText = string.Empty;
-            Buyer = string.Empty;
+            Owner = string.Empty;
             Year = string.Empty;
             TotalPrice = string.Empty;
             _buyerId = 0;
 
 
-            _gamesList = new List<SrvGameDetail>();
+            _gamesList = new List<SrvSellerGameDetail>();
         }
 
         public void ClearPartialData()
         {
-            _gamesList = new List<SrvGameDetail>();
+            _gamesList = new List<SrvSellerGameDetail>();
         }
 
         public async Task LoadGamesAsync()
@@ -161,67 +153,57 @@ namespace PPAsta.ViewModels
             }
         }
 
-        public int? GetTotalGamesChecked()
+        public decimal? GetTotalGamesChecked()
         {
-            var gamesChecked = Games.Where(x => x.IsSelected && x.PaymentProcess == PaymentGameProcess.ToBePaid);
+            var gamesChecked = Games.Where(x => x.IsSelected && x.PaymentSellerProcess != PaymentSellerProcess.PaidToSeller);
             if (gamesChecked.Any())
             {
-                return (int)gamesChecked.Sum(x => x.PurchasePrice)!;
+                return gamesChecked.Sum(x => x.ShareOwner)!;
             }
 
             return null;
         }
 
-        public async Task PaymentGamesAsync(int paymentType)
+        public async Task PaymentSellerAsync(int paymentType)
         {
-            var checkedGames = Games.Where(x => x.IsSelected && x.PaymentProcess == PaymentGameProcess.ToBePaid);
+            var checkedGames = Games.Where(x => x.IsSelected && x.PaymentSellerProcess != PaymentSellerProcess.PaidToSeller);
             if (checkedGames.Any())
             {
-                var paymentGames = await _paymentGameService.GetPaymentGameAsyncByGameIdsAsync(checkedGames.Select(x => x.Id));
+                var sellerGames = await _sellerService.GetSellerByGameIdsAsync(checkedGames.Select(x => x.Id));
 
-                foreach (var paymentGame in paymentGames)
+                foreach (var sellerGame in sellerGames)
                 {
-                    paymentGame.PaymentType = (PaymentType)paymentType;
-                    paymentGame.PaymentProcess = PaymentGameProcess.Paid;
+                    sellerGame.PaymentType = (PaymentType)paymentType;
+                    sellerGame.PaymentSellerProcess = PaymentSellerProcess.PaidToSeller;
                 }
 
-                await _paymentGameService.BulkUpdatePaymentGameAsync(paymentGames);
-
-                var sellers = (await _sellerService.GetSellerByPayementGameIdsAsync(paymentGames.Select(x => x.Id)))
-                .Where(x => x.PaymentSellerProcess == PaymentSellerProcess.NotPaid)
-                .ToList();
-
-                if (sellers.Count > 0)
-                {
-                    sellers.ForEach(s => s.PaymentSellerProcess = PaymentSellerProcess.PaidByBuyer);
-                    await _sellerService.UpdateSellersAsync(sellers);
-                }
+                await _sellerService.UpdateSellersAsync(sellerGames);          
 
                 await PartialReloadGamesAsync();
 
-                var payment = await _paymentService.GetPaymentByBuyerIdAsync(_buyerId);
-                var notPaidedGames = Games.Where(x => x.PaymentProcess == PaymentGameProcess.ToBePaid);
+                //var seller = await _sellerService.GetSellerByBuyerIdAsync(_buyerId);
+                //var notPaidedGames = Games.Where(x => x.SellerProcess == SellerGameProcess.ToBePaid);
 
-                if (notPaidedGames.Any())
-                {
-                    payment.PaymentProcess = PaymentProcess.NotFullyPaid;
-                }
-                else
-                {
-                    payment.PaymentProcess = PaymentProcess.Paid;
-                }
+                //if (notPaidedGames.Any())
+                //{
+                //    seller.SellerProcess = SellerProcess.NotFullyPaid;
+                //}
+                //else
+                //{
+                //    seller.SellerProcess = SellerProcess.Paid;
+                //}
 
-                await _paymentService.UpdatePaymentAsync(payment);
-            }            
+                //await _sellerService.UpdateSellerAsync(seller);
+            }
         }
 
-        private async Task<IEnumerable<SrvGameDetail>> GetGamesFilteredAsync()
+        private async Task<IEnumerable<SrvSellerGameDetail>> GetGamesFilteredAsync()
         {
-            IEnumerable<SrvGameDetail> gamesTemp = null;
+            IEnumerable<SrvSellerGameDetail> gamesTemp = null;
 
-            if (!_gamesList.Any())
+            if (!_gamesList.Any() && int.TryParse(Year, out int year))
             {
-                _gamesList = await _gameService.GetAllGameDetailsByBuyerIdAsync(_buyerId);
+                _gamesList = await _gameService.GetAllSellerGameDetailsByOwnerAsync(Owner, year);
             }
 
             var predicate = BuildPredicate();
@@ -234,7 +216,7 @@ namespace PPAsta.ViewModels
             return gamesTemp;
         }
 
-        private Func<SrvGameDetail, bool> BuildPredicate()
+        private Func<SrvSellerGameDetail, bool> BuildPredicate()
         {
             return e => e.Name.ToLower().Contains(_textResearch.ToLower())
                         || e.Owner.ToLower().Contains(_textResearch.ToLower());
@@ -245,7 +227,7 @@ namespace PPAsta.ViewModels
             return _count;
         }
 
-        private void RecordsPagination(IEnumerable<SrvGameDetail> gamesTemp)
+        private void RecordsPagination(IEnumerable<SrvSellerGameDetail> gamesTemp)
         {
             int skip = _page * 50;
             gamesTemp = gamesTemp.Skip(skip).Take(50);
@@ -253,7 +235,7 @@ namespace PPAsta.ViewModels
             BindGrid(gamesTemp);
         }
 
-        private void BindGrid(IEnumerable<SrvGameDetail> gamesTemp)
+        private void BindGrid(IEnumerable<SrvSellerGameDetail> gamesTemp)
         {
             Games.Clear();
 
@@ -311,11 +293,6 @@ namespace PPAsta.ViewModels
                         ? gamesTemp.OrderBy(x => x.Buyer).ToList()
                         : gamesTemp.OrderByDescending(x => x.Buyer).ToList();
                     break;
-                case "PaymentProcess":
-                    gamesTemp = isAscending
-                        ? gamesTemp.OrderBy(x => x.PaymentProcess).ToList()
-                        : gamesTemp.OrderByDescending(x => x.PaymentProcess).ToList();
-                    break;
                 case "SellingPrice":
                     gamesTemp = isAscending
                         ? gamesTemp.OrderBy(x => x.SellingPrice).ToList()
@@ -343,78 +320,31 @@ namespace PPAsta.ViewModels
             RecordsPagination(gamesTemp);
         }
 
-        public async Task DeletePaymentAsync(SrvGameDetail gameDetail)
+        public async Task DeletePaymentSellerAsync(SrvSellerGameDetail gameDetail)
         {
-            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(gameDetail.Id);
-            paymentGame.PaymentProcess = PaymentGameProcess.ToBePaid;
-            paymentGame.PaymentType = null;
+            var sellers = await _sellerService.GetSellerByGameIdsAsync([gameDetail.Id]);
+            var seller = sellers.FirstOrDefault();
+            seller.PaymentSellerProcess = PaymentSellerProcess.PaidByBuyer;
+            seller.PaymentType = null;
 
-            await _paymentGameService.UpdatePaymentGameAsync(paymentGame);
-
-            var sellers = (await _sellerService.GetSellerByPayementGameIdsAsync([paymentGame.Id]))
-                .Where(x => x.PaymentSellerProcess == PaymentSellerProcess.PaidByBuyer)
-                .ToList();
-
-            if (sellers.Count > 0)
-            {
-                sellers.ForEach(s => s.PaymentSellerProcess = PaymentSellerProcess.NotPaid);
-                await _sellerService.UpdateSellersAsync(sellers);
-            }
+            await _sellerService.UpdateSellersAsync([seller]);
 
             await PartialReloadGamesAsync();
 
-            var payment = await _paymentService.GetPaymentByBuyerIdAsync(_buyerId);
-            var gamePayed = Games.Where(x => x.PaymentProcess == PaymentGameProcess.Paid);
+            //var seller = await _sellerService.GetSellerByBuyerIdAsync(_buyerId);
+            //var gamePayed = Games.Where(x => x.SellerProcess == SellerGameProcess.Paid);
 
-            if (gamePayed.Any())
-            {
-                payment.PaymentProcess = PaymentProcess.NotFullyPaid;
-            }
-            else
-            {
-                payment.PaymentProcess = PaymentProcess.ToBePaid;
-            }
+            //if (gamePayed.Any())
+            //{
+            //    seller.SellerProcess = SellerProcess.NotFullyPaid;
+            //}
+            //else
+            //{
+            //    seller.SellerProcess = SellerProcess.ToBePaid;
+            //}
 
-            await _paymentService.UpdatePaymentAsync(payment);
+            //await _sellerService.UpdateSellerAsync(seller);
         }
 
-        public async Task RemoveGameFromBuyerAsync(SrvGameDetail gameDetail)
-        {
-            var paymentGame = await _paymentGameService.GetPaymentGameAsyncByGameIdAsync(gameDetail.Id);
-            paymentGame.PaymentProcess = PaymentGameProcess.Insert;
-            paymentGame.PaymentType = null;
-            paymentGame.BuyerId = null;
-            paymentGame.PurchasePrice = null;
-            paymentGame.ShareOwner = null;
-            paymentGame.SharePP = null;
-
-            await _paymentGameService.UpdatePaymentGameAsync(paymentGame);
-            await _sellerService.DeleteSellerByPayementGameIdAsync(paymentGame.Id);
-
-            await PartialReloadGamesAsync();
-
-            var payment = await _paymentService.GetPaymentByBuyerIdAsync(_buyerId);
-
-            if (Games.Any())
-            {
-                var gamePayed = Games.Where(x => x.PaymentProcess == PaymentGameProcess.ToBePaid);
-
-                if (gamePayed.Any())
-                {
-                    payment.PaymentProcess = PaymentProcess.NotFullyPaid;
-                }
-                else
-                {
-                    payment.PaymentProcess = PaymentProcess.ToBePaid;
-                }
-
-                await _paymentService.UpdatePaymentAsync(payment);
-                await _paymentService.HandlePaymentAsync(_buyerId);
-            }
-            else
-            {
-                await _paymentService.DeletePaymentAsync(payment);
-            }
-        }
     }
 }

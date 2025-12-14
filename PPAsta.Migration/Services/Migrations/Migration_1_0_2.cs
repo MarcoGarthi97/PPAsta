@@ -46,10 +46,21 @@ namespace PPAsta.Migration.Services.Migrations
             await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS PAYMENTS (
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     BuyerID INTEGER NOT NULL,
-                    PaymentProcess INTEGER NOT NULL,
+                    PaymentProcess SMALLINT NOT NULL,
                     TotalPurchasePrice REAL NOT NULL,
                     TotalShareOwner REAL NOT NULL,
                     TotalSharePP REAL NOT NULL,
+                    RCD DATETIME NOT NULL,
+                    RUD DATETIME NOT NULL
+                );
+            ");
+
+            await connection.QueryAsync($@"CREATE TABLE IF NOT EXISTS SELLERS (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    PaymentGameID INTEGER NOT NULL,
+                    PaymentSellerProcess SMALLINT NOT NULL,
+                    Year INTEGER NOT NULL,
+                    PaymentType SMALLINT NULL,
                     RCD DATETIME NOT NULL,
                     RUD DATETIME NOT NULL
                 );

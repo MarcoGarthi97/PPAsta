@@ -276,12 +276,12 @@ namespace PPAsta.ViewModels
             }
         }
 
-        public async Task UpdateBuyerAsync(SrvBuyer buyer)
+        public async Task UpdateBuyerAsync(SrvBuyer buyer, bool force)
         {
             var indexToEdit = _buyersList.FindIndex(x => x.Id == buyer.Id);
             if(indexToEdit > -1)
             {
-                if (_buyersList.Where(x => x.Year == buyer.Year && x.Number == buyer.Number).Count() < 1)
+                if (force || _buyersList.Where(x => x.Year == buyer.Year && x.Number == buyer.Number).Count() < 1)
                 {
                     await _buyerService.UpdateBuyerAsync(buyer);
                     _buyersList[indexToEdit] = buyer;

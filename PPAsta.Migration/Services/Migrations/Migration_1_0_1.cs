@@ -56,7 +56,7 @@ namespace PPAsta.Migration.Services.Migrations
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     GameID INTEGER NOT NULL,
                     BuyerID INTEGER NULL,
-                    PaymentProcess INTEGER NOT NULL,
+                    PaymentProcess SMALLINT NOT NULL,
                     PaymentType SMALLINT NULL,
                     SellingPrice REAL NOT NULL,
                     PurchasePrice REAL NULL,
